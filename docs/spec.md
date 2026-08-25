@@ -183,6 +183,8 @@ Este spec vive en el repo privado **`septimoplano/vera-socialis`** para colabora
 
 **Branches:** `master` protegida (CI verde + revisión para mergear) · ramas por tarea con prefijo de equipo: `a/<tarea>` y `b/<tarea>` · ramas cortas, merge frecuente (nada vive más de unos días) · detalle operativo en `tasks/plan.md` §7.
 
+**Uso estricto de los agentes (§10):** todo el trabajo del proyecto se ejecuta a través de los agentes de `.claude/agents/` — nada se desarrolla "a mano" fuera de ellos. Cualquier sesión de Claude Code en este repo: (1) las órdenes del fundador entran SIEMPRE por `cto-cio`, que delega en el especialista correcto; (2) cada tarea la ejecuta el agente de su territorio (frontend/ux-ui/qa en `web/`+`prototipo/`, backend/db-datos/seguridad/devops-infra en `api/`+infra); (3) ningún PR se mergea sin la revisión del agente que corresponde (seguridad en lo sensible, qa en lo visual, cto-cio contra doctrina). Colaboradores humanos siguen el mismo flujo desde sus propias sesiones de Claude Code.
+
 ---
 
 ## 6. Estructura del proyecto
@@ -258,6 +260,14 @@ Toda la apariencia de VERA SOCIALIS gira en torno a estas skills de Claude Code.
 - `impeccable` → diseño/rediseño, jerarquía visual, accesibilidad, estados de error/vacío, micro-interacciones, pulido general
 
 Regla de uso: el agente `ux-ui` y el `frontend` invocan estas skills antes de diseñar o construir cualquier vista; `qa` verifica contra ellas en la revisión visual.
+
+**Instalación obligatoria para trabajar:** el pack de Emil Kowalski es requisito del entorno. Al iniciar trabajo visual en una máquina nueva, Claude y los agentes verifican si las skills están disponibles; si no lo están, las instalan automáticamente sin preguntar:
+
+```
+git clone https://github.com/emilkowalski/skills "$HOME/.claude/skills/emil-skills"
+```
+
+(En Windows: `git clone https://github.com/emilkowalski/skills "$env:USERPROFILE\.claude\skills\emil-skills"`.) Ningún trabajo de UI comienza sin las skills cargadas.
 
 ---
 

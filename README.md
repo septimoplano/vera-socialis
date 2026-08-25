@@ -22,9 +22,11 @@ Dos equipos en paralelo, sin cuellos de botella (detalle en `tasks/plan.md` §6)
 - **Equipo B — Plataforma**: `api/`, infra · ramas `b/<slug>`
 
 1. Clonar y leer `docs/spec.md`.
-2. Tomar una tarea de `tasks/todo.md`.
-3. Rama por tarea (`a/...` o `b/...`) → PR a `master` → CI verde + revisión del otro equipo o cto-cio.
-4. El contrato (`docs/arquitectura.md`) solo cambia por PR aprobado por ambos equipos.
+2. **Instalar las skills de diseño** (requisito, spec §7.1): `git clone https://github.com/emilkowalski/skills ~/.claude/skills/emil-skills` — Claude las instala solo si faltan.
+3. Trabajar SIEMPRE a través de los agentes de `.claude/agents/` (spec §5.1): las órdenes entran por `cto-cio`, que delega. Nada se desarrolla a mano fuera de los agentes.
+4. Tomar una tarea de `tasks/todo.md`.
+5. Rama por tarea (`a/...` o `b/...`) → PR a `master` → CI verde + revisión del otro equipo o cto-cio.
+6. El contrato (`docs/arquitectura.md`) solo cambia por PR aprobado por ambos equipos.
 
 ## Reglas del repo
 
