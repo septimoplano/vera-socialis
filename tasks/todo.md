@@ -18,7 +18,10 @@
   - Verify: **CP1 — fundador aprueba en su celular.** Render headless comparado por qa.
   - Files: `prototipo/index.html`
   - **Estado (2026-08-31):** construido y verificado por qa (render headless 390px y 320px, sin errores de
-    consola, sin desborde horizontal, propaganda exacta cada 30 posts). **Falta CP1: aprobación del fundador
+    consola, sin desborde horizontal, propaganda exacta cada 30 posts). Pase de refinamiento con las skills
+    §7.1 `animate` e `impeccable`: contraste WCAG AA en todo el texto, objetivos táctiles de 44 px, nombres
+    accesibles en los botones de solo icono, y movimiento con propósito (entrada de vista, salida de hojas,
+    solo el mensaje nuevo se anima). **Falta CP1: aprobación del fundador
     en su celular.** El prototipo abre offline: media local en `prototipo/media/` (placeholders con licencia
     mixta, ver `prototipo/media/LEEME.md`, se reemplazan antes de A3).
 
