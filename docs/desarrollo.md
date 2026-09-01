@@ -84,6 +84,40 @@ El seed es **idempotente** (usa `onConflictDoNothing`), así que se puede correr
 
 `drizzle-orm` aparece en las devDependencies de la raíz además de en `api/`. No es un descuido: npm hoistea `drizzle-kit` a la raíz pero deja `drizzle-orm` dentro de `api/node_modules`, y así el CLI no logra resolver la librería. Tenerla también en la raíz arregla la resolución. El runtime siempre usa la de `api/`.
 
+## Autenticación
+
+Crear cuenta es **excluyente**: sin código de referido válido no hay cuenta (spec §2.1).
+
+```
+POST /auth/registro          código de referido + nombre de usuario + clave
+                             → crea la cuenta en `pendiente_verificacion`
+                             → quema el código
+                             → crea la conexión referido ↔ referente
+                             → deja la verificación en cola para el fundador
+                             → abre sesión (cookie httpOnly)
+POST /auth/login             nombre de usuario + clave
+POST /auth/salir             cierra esta sesión
+POST /auth/salir-de-todos    cierra todas las sesiones del usuario
+GET  /auth/yo                usuario de la sesión actual
+GET  /auth/codigos           mis códigos para invitar (requiere cuenta activa)
+POST /auth/codigos           emite códigos nuevos (solo admin)
+
+POST /auth/passkey/registro/opciones     alta de passkey (con sesión)
+POST /auth/passkey/registro/verificar
+POST /auth/passkey/login/opciones        login con huella o rostro
+POST /auth/passkey/login/verificar
+```
+
+Todo el registro corre dentro de una transacción: o queda la cuenta con su código quemado, su conexión y su verificación en cola, o no queda nada.
+
+**Estados de cuenta.** Una cuenta recién creada está `pendiente_verificacion`: puede ver su estado y cerrar sesión, pero no participar. Pasa a `activa` cuando el fundador aprueba su verificación humana (tarea B4).
+
+**Passkeys.** La biometría nunca sale del dispositivo: al servidor solo llega una clave pública. Los retos se guardan en la base (no en memoria) para que el login siga funcionando cuando Cloud Run escala a cero y levanta otra instancia; se consumen una sola vez y expiran a los 5 minutos.
+
+**Rate limiting.** Registro 5 por 15 min, login 10 por 15 min, passkeys 20 por 15 min. Los tests lo apagan (`limitarPeticiones: false`) porque si no la propia suite se autobloquea; el límite tiene su test dedicado que levanta una app con el límite encendido.
+
+**En producción la API se niega a arrancar** si `COOKIE_SECRET` quedó en el valor de desarrollo, si falta `DATABASE_URL`, o si `WEBAUTHN_RP_ID` sigue siendo `localhost`.
+
 ## CI
 
 `.github/workflows/ci.yml` corre en cada PR y push a master: lint → typecheck → tests → build, más un job que construye la imagen Docker de la API. Todo debe estar en verde antes de mergear.
