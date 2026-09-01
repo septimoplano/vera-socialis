@@ -32,8 +32,10 @@ que ya tengas corriendo. Se cambia con `DB_PUERTO` en `.env`; recuerda ajustar t
 | `npm run lint:fix` | Arregla lo que se pueda automáticamente |
 | `npm run typecheck` | TypeScript estricto, sin emitir |
 | `npm run build` | Compila API y frontend |
-| `npm run db:migrate` | Migraciones Drizzle (llega en B2) |
-| `npm run db:seed` | Datos semilla (llega en B2) |
+| `npm run db:migrate` | Aplica las migraciones Drizzle |
+| `npm run db:seed` | Carga los datos semilla (idempotente) |
+| `npm run db:generate -w @vera/api` | Genera una migración nueva tras cambiar el esquema |
+| `npm run db:studio -w @vera/api` | Explorador visual de la base |
 
 Verificación rápida de que la API vive: `curl http://localhost:3000/salud`
 
@@ -62,6 +64,25 @@ tasks/        → plan y tareas
 - **Tests**: Vitest. La lógica sensible del spec §9 exige cobertura — motor de score, stop scrolling, ráfaga ansiosa, reglas de visibilidad.
 - **Parámetros de producto**: van en la tabla `remote_config` (spec §3), nunca como constantes en el código. El entorno (`api/src/config.ts`) es solo infraestructura.
 - **Sin secretos en el repo**: `.env` está ignorado; en producción se usan env vars de Cloud Run y GitHub Secrets.
+
+## Base de datos
+
+El esquema vive en `api/src/db/esquema/`, separado por dominio (usuarios, red, contenido, chat, score, actividad, comunidad, config). Flujo para cambiarlo:
+
+1. Editar el archivo de esquema que corresponda.
+2. `npm run db:generate -w @vera/api` → genera el SQL en `api/drizzle/`.
+3. Revisar el SQL generado y commitearlo junto al cambio de esquema.
+4. `npm run db:migrate` para aplicarlo.
+
+**Nunca editar una migración ya aplicada**: se genera una nueva encima.
+
+Los **parámetros de producto** (spec §3) no son constantes del código: viven en la tabla `remote_config` y se ajustan desde el panel admin sin deploy. `api/src/db/parametros.ts` es solo la semilla y la documentación de cada uno; los marcados `esDoctrina` no se editan ni desde el admin.
+
+El seed es **idempotente** (usa `onConflictDoNothing`), así que se puede correr las veces que haga falta. Carga: los 21 parámetros de config, los 5 niveles de score, las 19 categorías, la cuenta del fundador con 10 códigos de referido, 2 empresas demo conectadas a él, 4 piezas de concientización y la primera votación de Comunidad.
+
+### Nota sobre `drizzle-orm` en la raíz
+
+`drizzle-orm` aparece en las devDependencies de la raíz además de en `api/`. No es un descuido: npm hoistea `drizzle-kit` a la raíz pero deja `drizzle-orm` dentro de `api/node_modules`, y así el CLI no logra resolver la librería. Tenerla también en la raíz arregla la resolución. El runtime siempre usa la de `api/`.
 
 ## CI
 

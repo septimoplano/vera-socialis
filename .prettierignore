@@ -5,3 +5,6 @@ coverage
 prototipo
 package-lock.json
 *.md
+
+# Migraciones generadas por drizzle-kit: se revisan, no se reformatean.
+api/drizzle

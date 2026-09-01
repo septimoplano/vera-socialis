@@ -13,6 +13,25 @@ jobs:
   verificar:
     name: Lint · typecheck · tests · build
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vera
+          POSTGRES_PASSWORD: vera_local
+          POSTGRES_DB: vera_socialis
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vera -d vera_socialis"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://vera:vera_local@localhost:5432/vera_socialis
+
     steps:
       - uses: actions/checkout@v4
 
@@ -30,11 +49,19 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Migraciones y datos semilla
+        run: npm run db:migrate && npm run db:seed
+
       - name: Tests
         run: npm test
 
       - name: Build
         run: npm run build
+
+      # Las dependencias de producción no admiten vulnerabilidades conocidas.
+      # Las de desarrollo se revisan aparte (ver docs/desarrollo.md).
+      - name: Auditoría de dependencias de producción
+        run: npm audit --omit=dev --audit-level=low
 
   imagen:
     name: Build de la imagen de la API
