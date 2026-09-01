@@ -17,6 +17,10 @@
   - Acceptance: `prototipo/index.html` desde `VERA/app_web.html` con TODO el spec §2: mundial por categorías + propaganda, stop scrolling (video/aviso + salir), ráfaga con respiración 4-6, métricas personales, tarjetas de categorías en perfil, buscador Mi Red, login con botón empresas, comunidad (votaciones + buzón), notificaciones. Skills §7.1 aplicadas.
   - Verify: **CP1 — fundador aprueba en su celular.** Render headless comparado por qa.
   - Files: `prototipo/index.html`
+  - **Estado (2026-08-31):** construido y verificado por qa (render headless 390px y 320px, sin errores de
+    consola, sin desborde horizontal, propaganda exacta cada 30 posts). **Falta CP1: aprobación del fundador
+    en su celular.** El prototipo abre offline: media local en `prototipo/media/` (placeholders con licencia
+    mixta, ver `prototipo/media/LEEME.md`, se reemplazan antes de A3).
 
 - [ ] **B2 · Esquema de datos completo + seed** (E2)
   - Acceptance: Drizzle con las ~20 tablas del plan E2, migraciones, `remote_config` con valores spec §3, seed: fundador, 19 categorías, 2 empresas demo.

@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#080e0a">
+<title>VERA SOCIALIS - Prototipo visual</title>
+
+<!-- Tipografia heredada del sistema visual VERA (vera-cowork/app/styles.css). Prototipo: CDN.
+     En web/ se autohospeda con @font-face + font-display:swap (spec 4). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Iconos: Phosphor (libreria real, sin SVG dibujado a mano) -->
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+
+<style>
+/* =========================================================================
+   VERA SOCIALIS - Prototipo visual (tarea A1, compuerta CP1)
+   Sistema visual: tokens heredados de vera-cowork/app/styles.css, extendidos.
+   Tema BLOQUEADO en oscuro (calma). Movil-first 320-430px.
+   Doctrina spec 11: sin likes, sin rojo, sin FOMO, clasificaciones invisibles.
+   ========================================================================= */
+
+:root{
+  /* Verdes de marca */
+  --g100:#99E89D; --g200:#73C883; --g300:#4DA768; --g400:#26874E; --g500:#006633;
+  /* Superficies */
+  --bg:#080e0a; --s1:#0f1a11; --s2:#162019;
+  --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.11);
+  --linea:rgba(255,255,255,.12); --linea2:rgba(255,255,255,.07);
+  /* Texto */
+  --tx:rgba(255,255,255,.92); --mu:rgba(255,255,255,.55); --fa:rgba(255,255,255,.30);
+  /* Ambar: unico color no verde, reservado a avisos de bienestar (no urgencia, no rojo) */
+  --ambar:#E8C56A;
+  /* Radios: sistema unico. Tarjetas 16, controles 12, pastillas 999. */
+  --r-card:16px; --r-ctrl:12px; --r-pill:999px;
+  /* Curvas y tiempos (emil-design-eng: nunca ease-in en UI) */
+  --out:cubic-bezier(.23,1,.32,1);
+  --inout:cubic-bezier(.77,0,.175,1);
+  --t-press:140ms; --t-ui:200ms; --t-sheet:260ms;
+  --nav-h:62px;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{height:100%}
+body{
+  background:radial-gradient(120% 90% at 50% -10%, #0d1712 0%, #060b08 55%, #04080a 100%) fixed;
+  color:var(--tx); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+  overflow-x:hidden; overscroll-behavior-y:none;
+}
+img{max-width:100%; height:auto; display:block}
+button,input,textarea,select{font:inherit; color:inherit}
+button{background:none; border:none; cursor:pointer; -webkit-tap-highlight-color:transparent}
+a{color:var(--g100)}
+[hidden]{display:none !important}
+
+/* Contenedor telefono */
+#raiz{width:100%; max-width:430px; margin:0 auto; min-height:100dvh; position:relative;
+  display:flex; flex-direction:column; background:transparent}
+
+/* ---------- Tipografia de marca ---------- */
+.marca{font-family:'Cinzel',serif; letter-spacing:.18em; font-weight:600}
+.serif{font-family:'Cormorant Garamond',serif; font-weight:300}
+.eyebrow{font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--fa)}
+
+/* ---------- Controles ---------- */
+.btn{width:100%; padding:14px 16px; border-radius:var(--r-ctrl); background:var(--g400); color:#fff;
+  font-size:15px; font-weight:500; transition:transform var(--t-press) var(--out), background var(--t-ui) ease;
+  display:flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn:disabled{background:rgba(255,255,255,.08); color:var(--fa); cursor:default; transform:none}
+.btn-2{width:100%; padding:13px 16px; border-radius:var(--r-ctrl); background:transparent; color:var(--tx);
+  border:1px solid var(--linea); font-size:14px; transition:transform var(--t-press) var(--out), background var(--t-ui) ease}
+.btn-2:active{transform:scale(.97)}
+.btn-txt{color:var(--mu); font-size:13px; padding:10px; transition:color var(--t-ui) ease}
+.icon-btn{width:40px; height:40px; border-radius:var(--r-pill); display:grid; place-items:center; font-size:21px;
+  color:var(--tx); position:relative; transition:transform var(--t-press) var(--out), background var(--t-ui) ease}
+.icon-btn:active{transform:scale(.94); background:var(--glass)}
+.pill{font-size:12.5px; padding:9px 15px; border-radius:var(--r-pill); border:1px solid var(--linea);
+  background:var(--glass); color:var(--tx); white-space:nowrap;
+  transition:transform var(--t-press) var(--out), background var(--t-ui) ease, border-color var(--t-ui) ease}
+.pill:active{transform:scale(.96)}
+.pill.on{background:rgba(115,200,131,.16); border-color:var(--g300); color:var(--g100)}
+
+.campo{display:flex; flex-direction:column; gap:7px; margin-bottom:16px}
+.campo label{font-size:12.5px; color:var(--mu)}
+.campo input,.campo textarea,.campo select{
+  width:100%; padding:13px 14px; border-radius:var(--r-ctrl); border:1px solid var(--linea);
+  background:rgba(0,0,0,.28); color:var(--tx); font-size:15px; transition:border-color var(--t-ui) ease}
+.campo input::placeholder,.campo textarea::placeholder{color:rgba(255,255,255,.34)}
+.campo input:focus,.campo textarea:focus{outline:none; border-color:var(--g300)}
+.campo .ayuda{font-size:11.5px; color:var(--mu)}
+.campo .error{font-size:11.5px; color:var(--ambar)}
+:focus-visible{outline:2px solid var(--g200); outline-offset:2px}
+
+/* ---------- Avatares y verificacion ---------- */
+.av{border-radius:50%; object-fit:cover; background:var(--s2); flex-shrink:0; aspect-ratio:1; width:100%; height:100%}
+.av-wrap{position:relative; flex-shrink:0; line-height:0}
+.medalla{position:absolute; right:-2px; bottom:-2px; width:16px; height:16px; border-radius:50%;
+  background:var(--g200); border:2px solid var(--bg); display:grid; place-items:center;
+  font-size:8px; color:#04140a}
+.medalla.grande{width:24px; height:24px; font-size:12px; border-width:3px}
+.av-sistema{width:100%; height:100%; border-radius:50%; display:grid; place-items:center;
+  background:linear-gradient(135deg,var(--g300),var(--g500)); font-family:'Cinzel',serif; color:#fff; font-size:15px}
+
+/* ---------- Header ---------- */
+.header{position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:6px;
+  padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;
+  background:rgba(8,14,10,.82); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--linea2)}
+.header h1{font-size:16px; font-weight:500; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.header .logo{font-family:'Cinzel',serif; font-size:14px; letter-spacing:.2em; color:var(--g100); flex:1}
+/* Badge SIEMPRE verde. Doctrina: nunca rojo. */
+.badge{position:absolute; top:4px; right:4px; min-width:17px; height:17px; padding:0 5px; border-radius:var(--r-pill);
+  background:var(--g300); color:#04140a; font-size:10px; font-weight:600; display:grid; place-items:center;
+  border:2px solid var(--bg)}
+
+/* ---------- Vistas y scroll ---------- */
+.scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:16px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px)}
+.vista{flex:1; display:flex; flex-direction:column; min-height:0}
+.vista[hidden]{display:none !important}
+
+/* ---------- Nav inferior ---------- */
+.nav{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; z-index:30;
+  display:grid; grid-template-columns:repeat(5,1fr); align-items:center;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(8,14,10,.9); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--linea2)}
+.nav button{display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--fa); font-size:9.5px;
+  padding:6px 0; transition:color var(--t-ui) ease, transform var(--t-press) var(--out)}
+.nav button i{font-size:22px}
+.nav button:active{transform:scale(.93)}
+.nav button.on{color:var(--g100)}
+
+/* ---------- Tarjetas ---------- */
+.card{border:1px solid var(--linea); background:var(--glass); border-radius:var(--r-card); padding:15px; margin-bottom:12px}
+.card-head{display:flex; align-items:center; gap:11px; margin-bottom:11px}
+.card-nom{font-size:14px; font-weight:500; color:#fff; display:flex; align-items:center; gap:6px}
+.card-sub{font-size:11px; color:var(--fa); margin-top:1px}
+.card-cuerpo{font-size:14.5px; line-height:1.6; color:var(--tx); white-space:pre-wrap}
+.card-foto{margin:12px -15px -15px; border-radius:0 0 var(--r-card) var(--r-card); overflow:hidden; aspect-ratio:16/10}
+.card-foto img{width:100%; height:100%; object-fit:cover}
+.card-pie{display:flex; align-items:center; gap:16px; margin-top:12px; padding-top:11px; border-top:1px solid var(--linea2)}
+.card-pie button{display:flex; align-items:center; gap:6px; color:var(--mu); font-size:12.5px;
+  transition:color var(--t-ui) ease, transform var(--t-press) var(--out)}
+.card-pie button:active{transform:scale(.95)}
+.card-pie button.guardado{color:var(--g100)}
+.card-pie i{font-size:17px}
+.cat-tag{font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--g200)}
+
+/* Propaganda VERA (cada 30 posts) */
+.propaganda{border:1px solid rgba(153,232,157,.28); background:linear-gradient(160deg, rgba(38,135,78,.20), rgba(6,11,8,.4));
+  border-radius:var(--r-card); padding:24px 20px; margin-bottom:12px; text-align:center}
+.propaganda .marca{font-size:12px; color:var(--g100); margin-bottom:14px; display:block}
+.propaganda p{font-family:'Cormorant Garamond',serif; font-size:21px; line-height:1.35; color:#fff; font-weight:300}
+.propaganda small{display:block; margin-top:12px; font-size:12px; color:var(--mu); line-height:1.6}
+
+/* Secciones y titulos internos */
+.sec-tit{font-size:13px; color:var(--mu); margin:22px 0 11px; display:flex; align-items:center; justify-content:space-between}
+.sec-tit:first-child{margin-top:0}
+.vacio{text-align:center; padding:44px 20px; color:var(--mu)}
+.vacio i{font-size:34px; color:var(--fa); display:block; margin-bottom:12px}
+.vacio p{font-size:14px; line-height:1.6; max-width:26ch; margin:0 auto}
+
+/* Esqueleto de carga (forma del contenido final, sin spinner generico) */
+.sk{border-radius:var(--r-card); background:linear-gradient(90deg, var(--glass) 25%, var(--glass2) 37%, var(--glass) 63%);
+  background-size:400% 100%; animation:brillo 1.4s linear infinite}
+@keyframes brillo{from{background-position:100% 0}to{background-position:0 0}}
+
+/* ---------- Filas de lista ---------- */
+.fila{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--linea2);
+  width:100%; text-align:left; transition:transform var(--t-press) var(--out)}
+.fila:active{transform:scale(.99)}
+.fila:last-child{border-bottom:none}
+.fila-txt{flex:1; min-width:0}
+.fila-tit{font-size:14.5px; color:#fff; display:flex; align-items:center; gap:6px}
+.fila-sub{font-size:12.5px; color:var(--mu); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fila-meta{font-size:11px; color:var(--fa); flex-shrink:0; align-self:flex-start; margin-top:4px}
+
+/* ---------- Grid de categorias ---------- */
+.grid-cat{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+.cat{border:1px solid var(--linea); background:var(--glass); border-radius:var(--r-card); padding:14px;
+  text-align:left; transition:transform var(--t-press) var(--out), border-color var(--t-ui) ease}
+.cat:active{transform:scale(.97)}
+.cat i{font-size:22px; color:var(--g200); display:block; margin-bottom:9px}
+.cat b{font-size:13.5px; font-weight:500; color:#fff; display:block}
+.cat span{font-size:11px; color:var(--fa)}
+.cat.empresas{border-color:rgba(232,197,106,.30)}
+.cat.empresas i{color:var(--ambar)}
+
+/* ---------- Perfil ---------- */
+.banner{height:132px; margin:-16px -16px 0; position:relative; overflow:hidden}
+.banner img{width:100%; height:100%; object-fit:cover; opacity:.72}
+.banner::after{content:""; position:absolute; inset:0; background:linear-gradient(to top, var(--bg), transparent 78%)}
+.perfil-top{display:flex; flex-direction:column; align-items:center; text-align:center; margin-top:-44px; position:relative; z-index:1}
+.perfil-nom{font-size:20px; font-weight:500; color:#fff; margin-top:12px}
+.perfil-desc{font-size:13.5px; color:var(--mu); line-height:1.6; max-width:30ch; margin:8px auto 0}
+.perfil-datos{display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap}
+.dato{border:1px solid var(--linea); background:var(--glass); border-radius:var(--r-pill); padding:7px 14px;
+  font-size:12px; color:var(--tx); display:flex; align-items:center; gap:6px}
+.dato b{color:#fff; font-weight:600}
+.dato i{font-size:14px; color:var(--g200)}
+.grid-posts{display:grid; grid-template-columns:repeat(3,1fr); gap:3px; margin:0 -16px}
+.grid-posts button{aspect-ratio:1; overflow:hidden; transition:opacity var(--t-ui) ease}
+.grid-posts img{width:100%; height:100%; object-fit:cover}
+.grid-posts button:active{opacity:.75}
+.tarjeta-pref{border:1px solid var(--linea); background:var(--glass); border-radius:var(--r-card); padding:13px 15px;
+  display:flex; align-items:center; gap:12px}
+.tarjeta-pref i{font-size:20px; color:var(--g200)}
+.tarjeta-pref b{font-size:13.5px; font-weight:500; color:#fff; display:block}
+.tarjeta-pref span{font-size:11.5px; color:var(--mu)}
+.barra{display:block; height:4px; border-radius:var(--r-pill); background:rgba(255,255,255,.09); overflow:hidden; margin-top:7px}
+.barra i{display:block; height:100%; background:var(--g300); border-radius:inherit}
+
+/* ---------- Mi Red: grafo ---------- */
+.grafo-wrap{border:1px solid var(--linea); border-radius:var(--r-card); background:rgba(0,0,0,.22); overflow:hidden; position:relative}
+#grafo{width:100%; display:block; touch-action:pan-y}
+.grafo-pie{position:absolute; left:12px; bottom:10px; font-size:11px; color:var(--fa)}
+
+/* ---------- Chat ---------- */
+.chat-scroll{flex:1; overflow-y:auto; padding:16px 16px 12px; display:flex; flex-direction:column; gap:8px}
+.msj{max-width:78%; padding:10px 13px; border-radius:var(--r-card); font-size:14.5px; line-height:1.5; position:relative;
+  animation:entra-msj 260ms var(--out) both}
+@keyframes entra-msj{from{opacity:0; transform:translateY(8px) scale(.97)}to{opacity:1; transform:none}}
+.msj img{border-radius:10px}
+.msj.mio{align-self:flex-end; background:var(--g500); color:#fff; border-bottom-right-radius:5px}
+.msj.suyo{align-self:flex-start; background:var(--glass2); border-bottom-left-radius:5px}
+.msj .hora{display:block; font-size:10px; color:rgba(255,255,255,.5); margin-top:4px; text-align:right}
+.msj-audio{display:flex; align-items:center; gap:10px; min-width:170px}
+.msj-audio i{font-size:22px; color:var(--g100)}
+.onda{flex:1; height:22px; display:flex; align-items:center; gap:2px}
+.onda span{flex:1; background:rgba(255,255,255,.4); border-radius:2px}
+.msj-ubic{width:190px}
+.msj-ubic img{border-radius:10px; margin-bottom:6px; aspect-ratio:19/11; object-fit:cover; width:100%}
+.msj-arch{display:flex; align-items:center; gap:10px}
+.msj-arch i{font-size:24px; color:var(--g100)}
+.aviso-e2e{text-align:center; font-size:11.5px; color:var(--fa); padding:10px 26px; line-height:1.6}
+.aviso-e2e i{color:var(--g200)}
+.barra-msj{display:flex; align-items:center; gap:8px; padding:10px 12px calc(env(safe-area-inset-bottom) + 12px);
+  border-top:1px solid var(--linea2); background:rgba(8,14,10,.9); backdrop-filter:blur(18px)}
+.barra-msj input{flex:1; padding:11px 15px; border-radius:var(--r-pill); border:1px solid var(--linea);
+  background:rgba(0,0,0,.3); font-size:15px}
+.barra-msj input:focus{outline:none; border-color:var(--g300)}
+.barra-msj .icon-btn{width:38px; height:38px; font-size:20px; color:var(--mu)}
+.barra-msj .enviar{background:var(--g400); color:#fff}
+/* Menu de reaccion: el otro NUNCA lo ve (doctrina 2.6) */
+.reac{position:absolute; z-index:60; display:flex; gap:6px; padding:7px; border-radius:var(--r-pill);
+  background:var(--s2); border:1px solid var(--linea); box-shadow:0 12px 34px rgba(0,0,0,.5);
+  animation:pop 180ms var(--out) both}
+@keyframes pop{from{opacity:0; transform:scale(.94)}to{opacity:1; transform:none}}
+.reac button{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-size:19px;
+  background:var(--glass); transition:transform var(--t-press) var(--out)}
+.reac button:active{transform:scale(.9)}
+
+/* ---------- Notificaciones ---------- */
+.noti{display:flex; gap:12px; align-items:flex-start; padding:13px 16px; width:100%; text-align:left;
+  border-bottom:1px solid var(--linea2); transition:background var(--t-ui) ease, transform var(--t-press) var(--out)}
+.noti:active{transform:scale(.99)}
+.noti.nueva{background:rgba(115,200,131,.07)}
+.noti-cuerpo{flex:1; min-width:0}
+.noti-txt{font-size:14px; line-height:1.5}
+.noti-txt b{font-weight:500; color:#fff}
+.noti-det{font-family:'Cormorant Garamond',serif; font-style:italic; font-size:14px; color:var(--mu); margin-top:4px; line-height:1.45}
+.noti-t{font-size:11px; color:var(--fa); margin-top:5px}
+.punto{width:8px; height:8px; border-radius:50%; background:var(--g200); flex-shrink:0; margin-top:8px}
+
+/* ---------- Comunidad ---------- */
+.voto-op{display:flex; align-items:center; gap:11px; padding:12px 14px; width:100%; text-align:left;
+  border:1px solid var(--linea); border-radius:var(--r-ctrl); margin-bottom:9px; position:relative; overflow:hidden;
+  transition:transform var(--t-press) var(--out), border-color var(--t-ui) ease}
+.voto-op:active{transform:scale(.98)}
+.voto-op.elegida{border-color:var(--g300)}
+.voto-op .relleno{position:absolute; inset:0 auto 0 0; background:rgba(115,200,131,.14); width:0;
+  transition:width 520ms var(--out)}
+.voto-op .et{position:relative; flex:1; font-size:14px}
+.voto-op .pc{position:relative; font-size:13px; color:var(--g100); font-variant-numeric:tabular-nums}
+
+/* ---------- Config ---------- */
+.grupo{border:1px solid var(--linea); background:var(--glass); border-radius:var(--r-card); overflow:hidden; margin-bottom:14px}
+.grupo .fila{padding:14px 15px; border-bottom:1px solid var(--linea2)}
+.grupo .fila:last-child{border-bottom:none}
+.grupo i.izq{font-size:19px; color:var(--g200); width:22px; text-align:center}
+.switch{width:44px; height:26px; border-radius:var(--r-pill); background:rgba(255,255,255,.13); position:relative;
+  flex-shrink:0; transition:background var(--t-ui) ease}
+.switch::after{content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%;
+  background:#fff; transition:transform var(--t-ui) var(--out)}
+.switch.on{background:var(--g400)}
+.switch.on::after{transform:translateX(18px)}
+
+/* ---------- Drawer lateral ---------- */
+.velo{position:fixed; inset:0; z-index:70; background:rgba(3,7,5,.72); backdrop-filter:blur(3px);
+  animation:velo-in var(--t-sheet) var(--out) both}
+@keyframes velo-in{from{opacity:0}to{opacity:1}}
+.drawer{position:fixed; top:0; bottom:0; left:0; z-index:71; width:78%; max-width:300px; background:var(--s1);
+  border-right:1px solid var(--linea); padding:calc(env(safe-area-inset-top) + 22px) 18px 22px;
+  display:flex; flex-direction:column; gap:4px; overflow-y:auto;
+  animation:drawer-in var(--t-sheet) var(--out) both}
+@keyframes drawer-in{from{transform:translateX(-100%)}to{transform:none}}
+.drawer .fila{padding:13px 4px}
+
+/* ---------- Hoja inferior (compositor, comentarios) ---------- */
+.hoja{position:fixed; left:50%; transform:translateX(-50%); bottom:0; z-index:71; width:100%; max-width:430px;
+  max-height:86dvh; display:flex; flex-direction:column; background:var(--s1);
+  border-top:1px solid var(--linea); border-radius:20px 20px 0 0; overflow:hidden;
+  animation:hoja-in var(--t-sheet) var(--out) both}
+@keyframes hoja-in{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+.hoja-head{display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--linea2)}
+.hoja-head h2{flex:1; font-size:15px; font-weight:500}
+.hoja-cuerpo{flex:1; overflow-y:auto; padding:16px}
+.asa{width:38px; height:4px; border-radius:2px; background:rgba(255,255,255,.18); margin:9px auto 0}
+.hoja textarea{width:100%; min-height:130px; resize:none; padding:14px; border-radius:var(--r-ctrl);
+  border:1px solid var(--linea); background:rgba(0,0,0,.28); font-size:15px; line-height:1.55}
+.hoja textarea:focus{outline:none; border-color:var(--g300)}
+.comentario{display:flex; gap:11px; padding:12px 0; border-bottom:1px solid var(--linea2)}
+.comentario:last-child{border-bottom:none}
+.comentario p{font-size:14px; line-height:1.55; margin-top:3px}
+
+/* ---------- Mecanicas de bienestar (pantalla completa) ---------- */
+.bienestar{position:fixed; inset:0; z-index:90; background:radial-gradient(120% 90% at 50% 30%, #0f1d15 0%, #050a07 70%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  padding:40px 28px calc(env(safe-area-inset-bottom) + 32px); animation:velo-in 320ms var(--out) both}
+.bienestar h2{font-family:'Cormorant Garamond',serif; font-weight:300; font-size:clamp(25px,7.5vw,31px);
+  color:#fff; line-height:1.28; max-width:17ch}
+.bienestar p{font-size:14.5px; color:var(--mu); line-height:1.65; max-width:29ch; margin-top:14px}
+.bienestar .acciones{width:100%; max-width:330px; margin-top:34px; display:flex; flex-direction:column; gap:10px}
+/* Aro de cuenta regresiva: sustituye al video mientras no haya videos en R2 */
+.aro{width:118px; height:118px; margin-bottom:26px; position:relative; display:grid; place-items:center}
+.aro svg{position:absolute; inset:0; transform:rotate(-90deg)}
+.aro circle{fill:none; stroke-width:3}
+.aro .pista{stroke:rgba(255,255,255,.10)}
+.aro .avance{stroke:var(--g200); stroke-linecap:round; transition:stroke-dashoffset 1s linear}
+.aro b{font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; color:var(--g100); font-variant-numeric:tabular-nums}
+
+/* Respiracion guiada 4-6 (inhalar 4s, exhalar 6s) */
+.respira{width:190px; height:190px; border-radius:50%; margin-bottom:8px; display:grid; place-items:center;
+  background:radial-gradient(circle at 50% 45%, rgba(153,232,157,.26), rgba(38,135,78,.03) 70%);
+  border:1px solid rgba(153,232,157,.30);
+  animation:respira46 10s var(--inout) infinite}
+@keyframes respira46{
+  0%{transform:scale(.72); opacity:.62}
+  40%{transform:scale(1); opacity:1}      /* inhalar 4s */
+  100%{transform:scale(.72); opacity:.62} /* exhalar 6s */
+}
+.respira span{font-family:'Cormorant Garamond',serif; font-style:italic; font-size:19px; color:var(--g100)}
+.ciclos{font-size:12.5px; color:var(--fa); margin-top:18px; font-variant-numeric:tabular-nums}
+
+/* ---------- Panel de demo (solo prototipo, no va a produccion) ---------- */
+body:has(.bienestar) #demo{display:none}
+#demo{position:fixed; z-index:95; right:10px; bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px)}
+#demo .abrir{width:40px; height:40px; border-radius:50%; background:var(--s2); border:1px solid var(--linea);
+  color:var(--mu); display:grid; place-items:center; font-size:18px; box-shadow:0 8px 24px rgba(0,0,0,.45)}
+#demo .cuerpo{position:absolute; right:0; bottom:48px; width:230px; padding:14px; border-radius:var(--r-card);
+  background:var(--s2); border:1px solid var(--linea); box-shadow:0 16px 40px rgba(0,0,0,.55);
+  animation:pop 200ms var(--out) both}
+#demo h3{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fa); margin-bottom:11px}
+#demo button.op{width:100%; text-align:left; padding:9px 10px; border-radius:9px; font-size:13px; color:var(--tx);
+  background:var(--glass); margin-bottom:6px; transition:transform var(--t-press) var(--out)}
+#demo button.op:active{transform:scale(.97)}
+#demo small{display:block; font-size:11px; color:var(--fa); line-height:1.5; margin-top:8px}
+
+/* ---------- Registro por pasos ---------- */
+.pasos{display:flex; gap:6px; margin-bottom:26px}
+.pasos i{flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,.10)}
+.pasos i.on{background:var(--g300)}
+.auth{flex:1; display:flex; flex-direction:column; padding:calc(env(safe-area-inset-top) + 26px) 22px calc(env(safe-area-inset-bottom) + 26px)}
+.auth-centro{flex:1; display:flex; flex-direction:column; justify-content:center}
+.auth h2{font-family:'Cormorant Garamond',serif; font-weight:300; font-size:27px; color:#fff; line-height:1.3; margin-bottom:10px}
+.auth p.intro{font-size:14px; color:var(--mu); line-height:1.65; margin-bottom:26px; max-width:32ch}
+.marca-grande{font-family:'Cinzel',serif; font-size:26px; letter-spacing:.24em; color:#fff; text-align:center}
+.marca-sub{font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px; color:var(--g100);
+  text-align:center; margin-top:10px}
+.camara{aspect-ratio:1; max-width:250px; margin:0 auto 22px; border-radius:50%; overflow:hidden; position:relative;
+  border:1px solid var(--linea); background:rgba(0,0,0,.3)}
+.camara img{width:100%; height:100%; object-fit:cover; aspect-ratio:1; transform:scale(1.14)}
+.camara .marco{position:absolute; inset:14px; border-radius:50%; border:2px dashed rgba(153,232,157,.4)}
+.acceso-empresas{text-align:center; margin-top:20px}
+.acceso-empresas button{font-size:12.5px; color:var(--fa); padding:10px; text-decoration:underline; text-underline-offset:3px}
+
+/* Insignia de empresa: unico lugar con acento ambar */
+.chip-empresa{font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ambar);
+  border:1px solid rgba(232,197,106,.35); border-radius:var(--r-pill); padding:2px 8px}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:.01ms !important}
+  .respira{animation:none; transform:scale(.9)}
+}
+@media (max-width:340px){
+  .scroll{padding-left:13px; padding-right:13px}
+  .grid-cat{gap:8px}
+}
+</style>
+</head>
+<body>
+
+<div id="raiz">
+
+<!-- ============================ AUTENTICACION ============================ -->
+<section class="vista auth" id="p-login">
+  <div class="auth-centro">
+    <div>
+      <div class="marca-grande">VERA</div>
+      <div class="marca-sub">Aquí cada cuenta es una persona.</div>
+    </div>
+    <div style="margin-top:44px">
+      <div class="campo">
+        <label for="l-usuario">Tu nombre de cuenta</label>
+        <input id="l-usuario" type="text" autocomplete="username" placeholder="valentina.cid" value="franciscopujol">
+      </div>
+      <button class="btn" id="b-entrar"><i class="ph ph-fingerprint"></i>Entrar con tu huella</button>
+      <p style="font-size:12px; color:var(--fa); text-align:center; margin-top:12px; line-height:1.6">
+        Tu huella no sale de este teléfono.
+      </p>
+      <button class="btn-2" style="margin-top:22px" id="b-ir-registro">Tengo un código de invitación</button>
+      <div class="acceso-empresas">
+        <button id="b-empresas">Acceso para empresas</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vista auth" id="p-registro" hidden>
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom:22px">
+    <button class="icon-btn" id="b-reg-atras"><i class="ph ph-arrow-left"></i></button>
+    <span class="eyebrow">Crear cuenta</span>
+  </div>
+  <div class="pasos" id="reg-pasos"><i class="on"></i><i></i><i></i><i></i></div>
+
+  <div class="auth-centro" id="reg-1">
+    <h2>Alguien te invito.</h2>
+    <p class="intro">En VERA no se entra solo. Necesitas el código de una persona que ya está adentro, y esa persona será tu primera conexión.</p>
+    <div class="campo">
+      <label for="r-codigo">Código de invitación</label>
+      <input id="r-codigo" type="text" inputmode="latin" autocapitalize="characters" placeholder="VERA-XXXX" value="VERA-7K2M">
+      <span class="ayuda" id="r-codigo-ayuda">Código de Valentina Cid.</span>
+    </div>
+    <button class="btn" data-paso="2">Continuar</button>
+  </div>
+
+  <div class="auth-centro" id="reg-2" hidden>
+    <h2>Tu teléfono confirma que eres tú.</h2>
+    <p class="intro">Usamos la huella o el rostro que ya tiene tu teléfono. VERA nunca recibe ese dato: se queda en el dispositivo.</p>
+    <div style="display:grid; place-items:center; padding:26px 0 34px">
+      <div style="width:104px; height:104px; border-radius:50%; display:grid; place-items:center;
+                  background:rgba(115,200,131,.10); border:1px solid rgba(153,232,157,.30)">
+        <i class="ph ph-fingerprint" style="font-size:44px; color:var(--g100)"></i>
+      </div>
+    </div>
+    <button class="btn" data-paso="3"><i class="ph ph-fingerprint"></i>Crear mi llave de acceso</button>
+  </div>
+
+  <div class="auth-centro" id="reg-3" hidden>
+    <h2>Una foto, una sola vez.</h2>
+    <p class="intro">Sirve para confirmar que hay una persona detrás de la cuenta. Se guarda cifrada, la revisa una persona del equipo y puedes pedir que la borren cuando quieras.</p>
+    <div class="camara">
+      <img src="media/selfie.jpg" alt="Vista previa de la cámara frontal">
+      <div class="marco"></div>
+    </div>
+    <button class="btn" data-paso="4"><i class="ph ph-camera"></i>Tomar la foto</button>
+  </div>
+
+  <div class="auth-centro" id="reg-4" hidden>
+    <div style="text-align:center">
+      <div style="width:76px; height:76px; border-radius:50%; margin:0 auto 22px; display:grid; place-items:center;
+                  background:rgba(115,200,131,.12); border:1px solid rgba(153,232,157,.30)">
+        <i class="ph ph-hourglass-medium" style="font-size:32px; color:var(--g100)"></i>
+      </div>
+      <h2 style="text-align:center">Estamos revisando tu foto.</h2>
+      <p class="intro" style="margin:0 auto 26px; text-align:center">
+        La revisa una persona, no un robot. Suele tomar unas horas. Te avisamos acá mismo cuando esté lista.
+      </p>
+      <button class="btn" id="b-entrar-demo">Ver la app (demo aprobada)</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ APP ============================ -->
+<div class="vista" id="app" hidden>
+
+  <header class="header">
+    <button class="icon-btn" id="b-menu"><i class="ph ph-list"></i></button>
+    <button class="icon-btn" id="b-atras" hidden><i class="ph ph-arrow-left"></i></button>
+    <h1 id="titulo">Socialis</h1>
+    <button class="icon-btn" id="b-noti">
+      <i class="ph ph-bell"></i>
+      <span class="badge" id="badge-noti">3</span>
+    </button>
+  </header>
+
+  <!-- Socialis: solo conexiones, orden cronológico -->
+  <section class="vista" id="v-socialis">
+    <div class="scroll" data-scroll="1" id="feed-socialis"></div>
+  </section>
+
+  <!-- Contenido mundial: categorias -->
+  <section class="vista" id="v-mundial" hidden>
+    <div class="scroll">
+      <p style="font-size:13.5px; color:var(--mu); line-height:1.6; margin-bottom:18px">
+        Elige de qué quieres leer. No hay nada eligiendo por ti.
+      </p>
+      <div class="grid-cat" id="grid-categorias"></div>
+    </div>
+  </section>
+
+  <!-- Hilo de una categoria -->
+  <section class="vista" id="v-categoria" hidden>
+    <div class="scroll" data-scroll="1" id="feed-categoria"></div>
+  </section>
+
+  <!-- Mi Red -->
+  <section class="vista" id="v-red" hidden>
+    <div class="scroll">
+      <div class="campo" style="margin-bottom:20px">
+        <input id="buscar-persona" type="search" placeholder="Buscar a alguien por su nombre">
+      </div>
+      <div id="resultados-busqueda"></div>
+      <div id="red-normal">
+        <div class="sec-tit"><span>Solicitudes</span></div>
+        <div id="solicitudes"></div>
+        <div class="sec-tit"><span>Tu red</span><span style="color:var(--fa)" id="conteo-red"></span></div>
+        <div class="grafo-wrap">
+          <canvas id="grafo" height="330"></canvas>
+          <span class="grafo-pie">Toca un nodo para ver a esa persona</span>
+        </div>
+        <div id="lista-conexiones" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chats -->
+  <section class="vista" id="v-chats" hidden>
+    <div class="scroll" id="lista-chats"></div>
+  </section>
+
+  <!-- Conversacion -->
+  <section class="vista" id="v-conversacion" hidden>
+    <div class="chat-scroll" id="mensajes"></div>
+    <div class="barra-msj">
+      <button class="icon-btn"><i class="ph ph-paperclip"></i></button>
+      <input id="txt-msj" type="text" placeholder="Escribe algo">
+      <button class="icon-btn"><i class="ph ph-microphone"></i></button>
+      <button class="icon-btn enviar" id="b-enviar"><i class="ph ph-paper-plane-right"></i></button>
+    </div>
+  </section>
+
+  <!-- Perfil -->
+  <section class="vista" id="v-perfil" hidden>
+    <div class="scroll" id="cuerpo-perfil"></div>
+  </section>
+
+  <!-- Metricas personales (privadas) -->
+  <section class="vista" id="v-metricas" hidden>
+    <div class="scroll" id="cuerpo-metricas"></div>
+  </section>
+
+  <!-- Notificaciones -->
+  <section class="vista" id="v-notificaciones" hidden>
+    <div class="scroll" style="padding-left:0; padding-right:0" id="lista-noti"></div>
+  </section>
+
+  <!-- Comunidad -->
+  <section class="vista" id="v-comunidad" hidden>
+    <div class="scroll" id="cuerpo-comunidad"></div>
+  </section>
+
+  <!-- Config -->
+  <section class="vista" id="v-config" hidden>
+    <div class="scroll" id="cuerpo-config"></div>
+  </section>
+
+  <!-- Perfil de empresa (demo) -->
+  <section class="vista" id="v-empresa" hidden>
+    <div class="scroll" id="cuerpo-empresa"></div>
+  </section>
+
+  <nav class="nav" id="nav">
+    <button data-v="socialis" class="on"><i class="ph-fill ph-house"></i><span>Socialis</span></button>
+    <button data-v="mundial"><i class="ph ph-globe-hemisphere-west"></i><span>Mundial</span></button>
+    <button data-v="red"><i class="ph ph-graph"></i><span>Mi Red</span></button>
+    <button data-v="chats"><i class="ph ph-chat-circle"></i><span>Chats</span></button>
+    <button data-v="perfil"><i class="ph ph-user"></i><span>Perfil</span></button>
+  </nav>
+</div>
+
+<!-- Panel de demo del prototipo -->
+<div id="demo" hidden>
+  <button class="abrir" id="demo-abrir" aria-label="Panel de demostración"><i class="ph ph-sliders-horizontal"></i></button>
+  <div class="cuerpo" id="demo-cuerpo" hidden>
+    <h3>Demo</h3>
+    <button class="op" data-demo="stop">Ver pausa de scroll</button>
+    <button class="op" data-demo="rafaga">Ver ráfaga ansiosa</button>
+    <button class="op" data-demo="propaganda">Ir a la propaganda VERA</button>
+    <button class="op" data-demo="empresa">Ver perfil de empresa</button>
+    <button class="op" data-demo="reset">Reiniciar prototipo</button>
+    <small>Los tiempos reales son 2, 10 y 30 minutos. Acá están acortados para poder mostrarlos.</small>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* =========================================================================
+   VERA SOCIALIS - Prototipo visual A1
+   Todo parametro sale de CFG (espejo de remote_config, spec 3). Nunca constantes sueltas.
+   ========================================================================= */
+
+const CFG = {
+  STOP_SCROLL_STEPS_MIN: [2, 10, 30],   // luego cada 30
+  STOP_SCROLL_LUEGO_MIN: 30,
+  STOP_VIDEO_S: 30,
+  PROPAGANDA_EVERY_POSTS: 30,
+  RAFAGA_VENTANA_MIN: 10,
+  RAFAGA_APERTURAS: 3,
+  RAFAGA_REBOTE_S: 15,
+  NIVELES: ['Inicial', 'En crecimiento', 'Confiable', 'Ejemplar', 'Referente'],
+  // Solo del prototipo: comprime los tiempos para poder mostrarlos en una demo.
+  DEMO_FACTOR: 15
+};
+const seg = m => Math.max(4, Math.round(m * 60 / CFG.DEMO_FACTOR));
+
+/* ---------------------------- Datos de muestra ---------------------------- */
+const YO = { id:'yo', nombre:'Francisco Pujol', usuario:'franciscopujol', nivel:2, conexiones:34,
+  desc:'QiGong, calma y cosas que se construyen despacio.', seed:'vera-francisco', privado:false };
+
+const P = [
+  { id:'valentina', nombre:'Valentina Cid',        nivel:3, seed:'vera-valentina' },
+  { id:'rodrigo',   nombre:'Rodrigo Marambio',     nivel:2, seed:'vera-rodrigo' },
+  { id:'josefa',    nombre:'Josefa Alcaíno',       nivel:4, seed:'vera-josefa' },
+  { id:'cristobal', nombre:'Cristóbal Neira',      nivel:1, seed:'vera-cristobal' },
+  { id:'paz',       nombre:'Paz Undurraga',        nivel:3, seed:'vera-paz' },
+  { id:'diego',     nombre:'Diego Quiroz',         nivel:2, seed:'vera-diego' },
+  { id:'emilia',    nombre:'Emilia Barahona',      nivel:2, seed:'vera-emilia' },
+  { id:'lucas',     nombre:'Lucas Zúñiga',         nivel:3, seed:'vera-lucas' },
+  { id:'catalina',  nombre:'Catalina Peñailillo',  nivel:2, seed:'vera-catalina' },
+  { id:'nicolas',   nombre:'Nicolás Aravena',      nivel:1, seed:'vera-nicolas' },
+  { id:'trinidad',  nombre:'Trinidad Larraín',     nivel:3, seed:'vera-trinidad' },
+  { id:'benjamin',  nombre:'Benjamín Cáceres',     nivel:2, seed:'vera-benjamin' },
+  { id:'isidora',   nombre:'Isidora Melo',         nivel:4, seed:'vera-isidora' },
+  { id:'vicente',   nombre:'Vicente Fuenzalida',   nivel:2, seed:'vera-vicente' },
+  { id:'amanda',    nombre:'Amanda Riquelme',      nivel:3, seed:'vera-amanda' },
+  { id:'sebastian', nombre:'Sebastián Toloza',     nivel:1, seed:'vera-sebastian' },
+  { id:'florencia', nombre:'Florencia Gaete',      nivel:2, seed:'vera-florencia' },
+  { id:'martin',    nombre:'Martín Escalona',      nivel:2, seed:'vera-martin' },
+  { id:'constanza', nombre:'Constanza Yáñez',      nivel:3, seed:'vera-constanza' },
+  { id:'ignacia',   nombre:'Ignacia Sotomayor',    nivel:2, seed:'vera-ignacia' }
+];
+const per = id => id === 'yo' ? YO : (P.find(p => p.id === id) || P[0]);
+
+/* Media local en prototipo/media/ (ver media/LEEME.md).
+   Sin CDN: el prototipo abre completo aunque el telefono no tenga senal. */
+const MEDIA = { av:12, post:8, banner:3 };
+const huella = t => { let h = 0; for (let i = 0; i < String(t).length; i++) h = (h * 31 + String(t).charCodeAt(i)) >>> 0; return h; };
+const avatar  = p => 'media/av' + (huella(p.seed) % MEDIA.av + 1) + '.jpg';
+const foto    = k => 'media/post' + (Math.abs(huella(k)) % MEDIA.post + 1) + '.jpg';
+const banner  = s => 'media/banner' + (huella(s) % MEDIA.banner + 1) + '.jpg';
+
+const EMPRESAS = [
+  { id:'trigales', nombre:'Panadería Los Trigales', seed:'vera-trigales', img:'media/post4.jpg', rubro:'Panadería de barrio, Ñuñoa',
+    desc:'Masa madre desde 2014. Abrimos de martes a domingo, y el pan de la tarde sale a las 17:00.' },
+  { id:'nuble', nombre:'Cerámica Ñuble', seed:'vera-nuble', img:'media/post5.jpg', rubro:'Taller de cerámica, Chillán',
+    desc:'Gres y esmaltes de ceniza. Hacemos piezas por encargo y talleres los sábados.' }
+];
+
+const CATEGORIAS = [
+  { id:'gastronomia',   n:'Gastronomía',    i:'ph-fork-knife' },
+  { id:'automovilismo', n:'Automovilismo',  i:'ph-car-profile' },
+  { id:'finanzas',      n:'Finanzas',       i:'ph-chart-line-up' },
+  { id:'tecnologia',    n:'Tecnología',     i:'ph-cpu' },
+  { id:'musica',        n:'Música',         i:'ph-music-notes' },
+  { id:'deporte',       n:'Deporte',        i:'ph-soccer-ball' },
+  { id:'viajes',        n:'Viajes',         i:'ph-airplane-tilt' },
+  { id:'arte',          n:'Arte y Diseño',  i:'ph-palette' },
+  { id:'ciencia',       n:'Ciencia',        i:'ph-flask' },
+  { id:'bienestar',     n:'Bienestar',      i:'ph-leaf' },
+  { id:'cine',          n:'Cine y Series',  i:'ph-film-slate' },
+  { id:'videojuegos',   n:'Videojuegos',    i:'ph-game-controller' },
+  { id:'literatura',    n:'Literatura',     i:'ph-book-open' },
+  { id:'mascotas',      n:'Mascotas',       i:'ph-paw-print' },
+  { id:'naturaleza',    n:'Naturaleza',     i:'ph-tree' },
+  { id:'educacion',     n:'Educación',      i:'ph-graduation-cap' },
+  { id:'fotografia',    n:'Fotografía',     i:'ph-camera' },
+  { id:'emprendimiento',n:'Emprendimiento', i:'ph-rocket-launch' },
+  { id:'empresas',      n:'Empresas',       i:'ph-buildings', especial:true }
+];
+
+const TEXTOS_CAT = {
+  bienestar: [
+    'Llevo tres semanas levantándome a las 6:30 sin alarma. No fue fuerza de voluntad, fue acostarme antes.',
+    'Pregunta honesta: ¿alguien acá hace respiración 4-6 antes de dormir? Me está costando sostener el hábito más de cuatro días.',
+    'Dejé el café después de las 14:00 y el cambio en el sueño fue inmediato. No pensé que fuera tan directo.',
+    'Hoy caminé 40 minutos sin teléfono. Me aburrí los primeros diez y después se puso bueno.',
+    'Lo que me sirvió para la ansiedad no fue una app, fue tener una hora fija para almorzar.'
+  ],
+  gastronomia: [
+    'El secreto del pan de masa madre no es la harina, es la paciencia con la fermentación en frío.',
+    'Hice cazuela de vacuno con el zapallo camote que trajo mi mamá de Curicó. Otro nivel.',
+    '¿Alguien tiene una buena receta de merluza al horno que no quede seca?'
+  ],
+  tecnologia: [
+    'Migré todo mi respaldo a un disco local y dejé de pagar nube. Tres horas de trabajo, cero cuentas mensuales.',
+    'Lo interesante de las bases de datos serverless no es el precio, es no tener que pensar en el servidor.'
+  ]
+};
+const GENERICOS = [
+  'Estuve pensando en esto toda la semana y todavía no llego a una conclusión clara.',
+  'Comparto algo que me sirvió, por si a alguien más le sirve.',
+  'Pregunta para quienes llevan más tiempo en esto: ¿por dónde empezarían hoy?',
+  'Me equivoqué en algo bastante básico y prefiero contarlo a que le pase a otro.',
+  'Anoche terminé algo que llevaba meses postergando. Se siente raro y bien.'
+];
+
+const hace = i => {
+  const t = ['hace 5 min','hace 22 min','hace 1 h','hace 3 h','hace 6 h','ayer','hace 2 días','hace 4 días'];
+  return t[i % t.length];
+};
+
+function postsDeCategoria(catId, cantidad){
+  const base = TEXTOS_CAT[catId] || [];
+  const out = [];
+  for (let k = 0; k < cantidad; k++){
+    const autor = P[k % P.length];
+    const texto = k < base.length ? base[k] : GENERICOS[k % GENERICOS.length];
+    out.push({
+      id: catId + '-' + k, autor: autor.id, cat: catId, texto,
+      foto: k % 4 === 0 ? foto(catId + k) : null,
+      comentarios: (k * 7) % 9, tiempo: hace(k), guardado:false
+    });
+  }
+  return out;
+}
+const POSTS_CAT = {};
+CATEGORIAS.forEach(c => { if (!c.especial) POSTS_CAT[c.id] = postsDeCategoria(c.id, c.id === 'bienestar' ? 64 : 14); });
+POSTS_CAT.empresas = EMPRESAS.map((e, k) => ({
+  id:'empresas-' + k, empresa:e.id, cat:'empresas',
+  texto: k === 0 ? 'Desde el martes tenemos hallulla integral de masa madre. Sale del horno a las 8:00 y a las 17:00.'
+                 : 'Abrimos inscripciones al taller de torno de septiembre. Ocho cupos, sábados de 10:00 a 13:00.',
+  foto:(k === 0 ? 'media/post4.jpg' : 'media/post5.jpg'), comentarios:k === 0 ? 4 : 2, tiempo:hace(k), guardado:false
+}));
+
+const POSTS_SOCIALIS = [
+  { id:'s1', autor:'valentina', texto:'Terminé el jardín de la terraza. Tres meses, dos plantas muertas y una que resucitó sola.',
+    foto:'media/post1.jpg', comentarios:6, tiempo:'hace 40 min' },
+  { id:'s2', autor:'josefa', texto:'Hoy mi hija me preguntó por qué los adultos miran tanto el teléfono. No supe qué responder rápido, y esa demora me dijo algo.',
+    foto:null, comentarios:11, tiempo:'hace 2 h' },
+  { id:'s3', autor:'diego', texto:'Primera vez que cocino para ocho personas sin ponerme nervioso. Cazuela, pan y nada más.',
+    foto:'media/post2.jpg', comentarios:4, tiempo:'hace 5 h' },
+  { id:'s4', autor:'paz', texto:'Volví a tocar guitarra después de seis años. Me duelen los dedos y estoy contenta.',
+    foto:null, comentarios:8, tiempo:'ayer' },
+  { id:'s5', autor:'lucas', texto:'Caminata al Cerro Manquehue con la Trinidad y el Benjamín. Salimos a las 7:00 para evitar el calor.',
+    foto:'media/post3.jpg', comentarios:3, tiempo:'ayer' },
+  { id:'s6', autor:'isidora', texto:'Cerré el taller de cerámica por dos semanas. Necesito descansar antes de que el cuerpo me obligue.',
+    foto:null, comentarios:9, tiempo:'hace 2 días' }
+];
+POSTS_SOCIALIS.forEach(p => { p.guardado = false; });
+
+const COMENTARIOS = {
+  s1: [
+    { autor:'diego',   texto:'Qué buena. ¿Cuál resucitó?' },
+    { autor:'emilia',  texto:'Se ve increíble. Yo llevo dos intentos y ninguno prosperó.' },
+    { autor:'paz',     texto:'Me encanta que hayas contado también las que murieron.' }
+  ],
+  s2: [
+    { autor:'rodrigo',   texto:'Esa demora es la respuesta.' },
+    { autor:'trinidad',  texto:'Mi hijo me preguntó lo mismo el año pasado y todavía lo pienso.' }
+  ]
+};
+
+const CHATS = [
+  { id:'c1', con:'valentina', ultimo:'Te mando la foto del vivero', hora:'11:42', nuevos:2 },
+  { id:'c2', con:'rodrigo',   ultimo:'Dale, nos vemos el jueves',  hora:'09:15', nuevos:0 },
+  { id:'c3', con:'josefa',    ultimo:'Gracias por lo de ayer',      hora:'ayer',  nuevos:0 },
+  { id:'c4', con:'trigales',  ultimo:'Sí, tenemos sin gluten los viernes', hora:'ayer', nuevos:0, empresa:true }
+];
+const MENSAJES = {
+  c1:[
+    { de:'valentina', t:'Hola! ¿Fuiste al vivero de la Florida al final?', h:'11:20' },
+    { de:'yo',        t:'Sí, ayer. Tenían los helechos que buscabas', h:'11:24' },
+    { de:'valentina', t:'Te mando la foto del vivero', h:'11:41' },
+    { de:'valentina', tipo:'foto', src:'media/post6.jpg', h:'11:42' }
+  ],
+  c2:[
+    { de:'rodrigo', t:'Oye, ¿la reunión del jueves sigue en pie?', h:'09:02' },
+    { de:'yo',      t:'Sí, a las 10:30 en tu oficina', h:'09:10' },
+    { de:'rodrigo', tipo:'audio', dur:'0:14', h:'09:12' },
+    { de:'rodrigo', t:'Dale, nos vemos el jueves', h:'09:15' }
+  ],
+  c3:[
+    { de:'josefa', t:'Gracias por lo de ayer', h:'18:40' },
+    { de:'josefa', tipo:'ubicacion', lugar:'Parque Bustamante, Providencia', h:'18:41' },
+    { de:'yo',     tipo:'archivo', nombre:'rutina-respiracion.pdf', peso:'240 KB', h:'19:02' }
+  ],
+  c4:[
+    { de:'yo',        t:'Hola, ¿tienen pan sin gluten?', h:'16:20' },
+    { de:'trigales',  t:'Sí, tenemos sin gluten los viernes', h:'16:48' }
+  ]
+};
+
+let NOTIS = [
+  { id:'n1', tipo:'comentario', quien:'josefa', txt:'comentó tu publicación', det:'Me pasó lo mismo la semana pasada, gracias por escribirlo.', t:'hace 5 min', nueva:true, va:'socialis' },
+  { id:'n2', tipo:'conexion',   quien:'catalina', txt:'aceptó tu solicitud', det:'+1 conexión nueva', t:'hace 22 min', nueva:true, va:'red' },
+  { id:'n3', tipo:'mensaje',    quien:'valentina', txt:'te escribió', det:'Te mando la foto del vivero', t:'hace 1 h', nueva:true, va:'chats' },
+  { id:'n4', tipo:'mencion',    quien:'lucas', txt:'te mencionó en un post', det:'con @franciscopujol subimos el domingo', t:'hace 3 h', nueva:false, va:'socialis' },
+  { id:'n5', tipo:'guardado',   quien:'amanda', txt:'guardó tu publicación', det:'', t:'ayer', nueva:false, va:'perfil' },
+  { id:'n6', tipo:'sistema',    quien:null, txt:'Bienestar tiene 12 publicaciones nuevas desde tu última visita', det:'', t:'ayer', nueva:false, va:'mundial' },
+  { id:'n7', tipo:'sistema',    quien:null, txt:'Llegaste al nivel Confiable. Se nota en cómo conversas.', det:'', t:'hace 3 dias', nueva:false, va:'perfil' }
+];
+
+let SOLICITUDES = [
+  { de:'ignacia', via:'Conocida de Valentina Cid' },
+  { de:'martin',  via:'Conocido de Rodrigo Marambio' }
+];
+
+let VOTACIONES = [
+  { id:'v1', titulo:'Agregar la categoría Agricultura urbana',
+    detalle:'Propuesta de Trinidad Larraín. Ya hay 14 personas publicando huertos dentro de Naturaleza.',
+    opciones:[{t:'A favor', v:41},{t:'En contra', v:6},{t:'Me da lo mismo', v:9}], votado:null, cierra:'Cierra en 3 días' },
+  { id:'v2', titulo:'Bajar la pausa de scroll de 2 a 3 minutos',
+    detalle:'Propuesta de Diego Quiroz. La pausa seguiría existiendo, cambiaría el primer aviso.',
+    opciones:[{t:'A favor', v:12},{t:'En contra', v:33},{t:'Me da lo mismo', v:4}], votado:null, cierra:'Cierra en 6 días' },
+  { id:'v3', titulo:'Permitir editar un post después de publicarlo',
+    detalle:'Propuesta de Emilia Barahona. Con marca visible de editado y ventana de 15 minutos.',
+    opciones:[{t:'A favor', v:52},{t:'En contra', v:3},{t:'Me da lo mismo', v:2}], votado:null, cierra:'Cierra mañana' },
+];
+
+const PREFERENCIAS = [
+  { cat:'bienestar', pct:38 }, { cat:'literatura', pct:24 }, { cat:'gastronomia', pct:18 }
+];
+
+/* ---------------------------- Estado ---------------------------- */
+const S = {
+  vista:'socialis', catActual:null, chatActual:null, perfilDe:'yo', empresaActual:'trigales',
+  pila:[], scrollSeg:0, scrollActivo:0, hitos:[], aperturas:[], perfilPrivado:false, guardados:new Set()
+};
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nivelDe = n => CFG.NIVELES[n] || CFG.NIVELES[0];
+
+/* ---------------------------- Piezas reutilizables ---------------------------- */
+function avHTML(p, px, medalla){
+  return '<span class="av-wrap" style="width:' + px + 'px;height:' + px + 'px">' +
+    '<img class="av" src="' + avatar(p) + '" alt="" width="' + px + '" height="' + px + '">' +
+    (medalla === false ? '' : '<span class="medalla"><i class="ph-fill ph-check"></i></span>') + '</span>';
+}
+function empHTML(e, px){
+  return '<span class="av-wrap" style="width:' + px + 'px;height:' + px + 'px">' +
+    '<img class="av" src="' + e.img + '" alt="" width="' + px + '" height="' + px + '"></span>';
+}
+function postHTML(p){
+  const esEmpresa = !!p.empresa;
+  const a = esEmpresa ? EMPRESAS.find(e => e.id === p.empresa) : per(p.autor);
+  const cat = p.cat ? CATEGORIAS.find(c => c.id === p.cat) : null;
+  const guardado = S.guardados.has(p.id);
+  return '<article class="card" data-post="' + p.id + '">' +
+    '<div class="card-head">' +
+      (esEmpresa ? empHTML(a, 40) : avHTML(a, 40)) +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="card-nom">' + esc(a.nombre) + (esEmpresa ? ' <span class="chip-empresa">Empresa</span>' : '') + '</div>' +
+        '<div class="card-sub">' + (cat ? '<span class="cat-tag">' + esc(cat.n) + '</span> · ' : '') + p.tiempo + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<p class="card-cuerpo">' + esc(p.texto) + '</p>' +
+    (p.foto ? '<div class="card-foto"><img src="' + p.foto + '" alt="" loading="lazy" width="700" height="460"></div>' : '') +
+    '<div class="card-pie">' +
+      '<button data-comentar="' + p.id + '"><i class="ph ph-chat-teardrop-text"></i>' +
+        (p.comentarios ? p.comentarios + ' comentarios' : 'Comentar') + '</button>' +
+      '<button data-guardar="' + p.id + '" class="' + (guardado ? 'guardado' : '') + '">' +
+        '<i class="' + (guardado ? 'ph-fill' : 'ph') + ' ph-bookmark-simple"></i>' + (guardado ? 'Guardado' : 'Guardar') + '</button>' +
+    '</div>' +
+  '</article>';
+}
+const PROPAGANDAS = [
+  { t:'Nadie recuerda el scroll de anteayer.', s:'Pero sí te acuerdas de con quién hablaste. Esa es la diferencia que estamos cuidando.' },
+  { t:'Acá no hay nada que perderse.', s:'Sin algoritmo que ordene por ti, lo que no viste hoy sigue estando mañana.' },
+  { t:'Comentar cuesta más que aplaudir.', s:'Por eso en VERA solo existe el comentario. Escribir obliga a pensar qué quieres decir.' }
+];
+function propagandaHTML(i){
+  const p = PROPAGANDAS[i % PROPAGANDAS.length];
+  return '<div class="propaganda"><span class="marca">VERA</span><p>' + esc(p.t) + '</p><small>' + esc(p.s) + '</small></div>';
+}
+
+/* ---------------------------- Navegacion ---------------------------- */
+const TITULOS = { socialis:'Socialis', mundial:'Contenido mundial', red:'Mi Red', chats:'Chats', perfil:'Perfil',
+  notificaciones:'Notificaciones', comunidad:'Comunidad', config:'Configuración', metricas:'Métricas personales',
+  categoria:'', conversacion:'', empresa:'' };
+const CON_NAV = ['socialis','mundial','red','chats','perfil'];
+
+function ir(v, opts){
+  opts = opts || {};
+  if (!opts.atras && S.vista !== v) S.pila.push(S.vista);
+  S.vista = v;
+  $$('#app > section.vista').forEach(s => { s.hidden = true; });
+  const el = $('#v-' + v); if (el) el.hidden = false;
+
+  let titulo = TITULOS[v] || '';
+  if (v === 'categoria') titulo = (CATEGORIAS.find(c => c.id === S.catActual) || {}).n || '';
+  if (v === 'conversacion'){
+    const ch = CHATS.find(c => c.id === S.chatActual);
+    titulo = ch ? (ch.empresa ? EMPRESAS.find(e => e.id === ch.con).nombre : per(ch.con).nombre) : '';
+  }
+  if (v === 'empresa') titulo = (EMPRESAS.find(e => e.id === S.empresaActual) || {}).nombre || '';
+  if (v === 'perfil' && S.perfilDe !== 'yo') titulo = per(S.perfilDe).nombre;
+  $('#titulo').textContent = titulo;
+
+  const raiz = CON_NAV.includes(v) && !(v === 'perfil' && S.perfilDe !== 'yo');
+  $('#b-menu').hidden = !raiz; $('#b-atras').hidden = raiz;
+  $('#nav').hidden = !raiz;
+  $$('#nav button').forEach(b => {
+    const on = b.dataset.v === v; b.classList.toggle('on', on);
+    b.querySelector('i').className = (on ? 'ph-fill ' : 'ph ') + b.querySelector('i').className.split(' ')[1];
+  });
+
+  if (v === 'socialis')       pintarSocialis();
+  if (v === 'mundial')        pintarCategorias();
+  if (v === 'categoria')      pintarCategoria();
+  if (v === 'red')            pintarRed();
+  if (v === 'chats')          pintarChats();
+  if (v === 'conversacion')   pintarConversacion();
+  if (v === 'perfil')         pintarPerfil();
+  if (v === 'metricas')       pintarMetricas();
+  if (v === 'notificaciones') pintarNotificaciones();
+  if (v === 'comunidad')      pintarComunidad();
+  if (v === 'config')         pintarConfig();
+  if (v === 'empresa')        pintarEmpresa();
+  reiniciarScrollSesion();
+}
+function atras(){
+  const prev = S.pila.pop() || 'socialis';
+  if (prev === 'perfil') S.perfilDe = 'yo';
+  ir(prev, { atras:true });
+}
+
+/* ---------------------------- Vistas ---------------------------- */
+function pintarSocialis(){
+  $('#feed-socialis').innerHTML =
+    '<p style="font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:16px">' +
+    'Lo que publicaron tus conexiones, en el orden en que lo publicaron.</p>' +
+    POSTS_SOCIALIS.map(postHTML).join('');
+}
+function pintarCategorias(){
+  $('#grid-categorias').innerHTML = CATEGORIAS.map(c =>
+    '<button class="cat' + (c.especial ? ' empresas' : '') + '" data-cat="' + c.id + '">' +
+      '<i class="ph ' + c.i + '"></i><b>' + esc(c.n) + '</b>' +
+      '<span>' + (POSTS_CAT[c.id] ? POSTS_CAT[c.id].length : 0) + ' publicaciones</span>' +
+    '</button>').join('');
+}
+function pintarCategoria(){
+  const cat = CATEGORIAS.find(c => c.id === S.catActual);
+  const posts = POSTS_CAT[S.catActual] || [];
+  let html = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">' +
+    '<i class="ph ' + cat.i + '" style="font-size:26px;color:var(--g200)"></i>' +
+    '<div style="flex:1"><div style="font-size:15px;color:#fff">' + esc(cat.n) + '</div>' +
+    '<div style="font-size:12px;color:var(--fa)">' + posts.length + ' publicaciones · orden cronológico</div></div>' +
+    (cat.especial ? '' : '<button class="pill" id="b-publicar"><i class="ph ph-note-pencil"></i> Publicar</button>') + '</div>';
+  if (!posts.length){
+    html += '<div class="vacio"><i class="ph ph-wind"></i><p>Todavía no hay nada acá. Puedes ser quien empiece.</p></div>';
+  }
+  posts.forEach((p, k) => {
+    if (k > 0 && k % CFG.PROPAGANDA_EVERY_POSTS === 0) html += propagandaHTML(k / CFG.PROPAGANDA_EVERY_POSTS - 1);
+    html += postHTML(p);
+  });
+  $('#feed-categoria').innerHTML = html;
+  $('#feed-categoria').scrollTop = 0;
+}
+function pintarRed(){
+  $('#conteo-red').textContent = YO.conexiones + ' conexiones';
+  $('#solicitudes').innerHTML = SOLICITUDES.length ? SOLICITUDES.map(s => {
+    const p = per(s.de);
+    return '<div class="fila">' + avHTML(p, 44) +
+      '<div class="fila-txt"><div class="fila-tit">' + esc(p.nombre) + '</div>' +
+      '<div class="fila-sub">' + esc(s.via) + '</div></div>' +
+      '<button class="pill on" data-aceptar="' + s.de + '">Aceptar</button>' +
+      '<button class="icon-btn" data-rechazar="' + s.de + '"><i class="ph ph-x"></i></button></div>';
+  }).join('') : '<div style="font-size:13px;color:var(--fa);padding:6px 0">No tienes solicitudes pendientes.</div>';
+
+  $('#lista-conexiones').innerHTML = P.slice(0, 8).map(p =>
+    '<button class="fila" data-persona="' + p.id + '">' + avHTML(p, 44) +
+    '<div class="fila-txt"><div class="fila-tit">' + esc(p.nombre) + '</div>' +
+    '<div class="fila-sub">' + nivelDe(p.nivel) + '</div></div>' +
+    '<i class="ph ph-caret-right" style="color:var(--fa)"></i></button>').join('');
+  dibujarGrafo();
+}
+function pintarChats(){
+  $('#lista-chats').innerHTML = CHATS.map(c => {
+    const esEmp = !!c.empresa;
+    const p = esEmp ? EMPRESAS.find(e => e.id === c.con) : per(c.con);
+    return '<button class="fila" data-chat="' + c.id + '">' + (esEmp ? empHTML(p, 48) : avHTML(p, 48)) +
+      '<div class="fila-txt"><div class="fila-tit">' + esc(p.nombre) +
+        (esEmp ? ' <span class="chip-empresa">Empresa</span>' : '') + '</div>' +
+      '<div class="fila-sub">' + esc(c.ultimo) + '</div></div>' +
+      '<div style="text-align:right"><div class="fila-meta">' + c.hora + '</div>' +
+      (c.nuevos ? '<span class="badge" style="position:static;display:inline-grid;margin-top:6px;border:none">' + c.nuevos + '</span>' : '') +
+      '</div></button>';
+  }).join('');
+}
+function pintarConversacion(){
+  const ch = CHATS.find(c => c.id === S.chatActual);
+  ch.nuevos = 0;
+  const ms = MENSAJES[S.chatActual] || [];
+  let html = '<p class="aviso-e2e"><i class="ph ph-lock-key"></i> Cifrado de extremo a extremo. Ni VERA puede leer esto.</p>';
+  if (ch.empresa) html += '<p class="aviso-e2e">Esta empresa solo puede responderte. No puede escribirte primero.</p>';
+  ms.forEach((m, k) => {
+    const mio = m.de === 'yo';
+    let cuerpo;
+    if (m.tipo === 'foto')          cuerpo = '<img src="' + m.src + '" alt="" style="border-radius:10px" width="250" height="170">';
+    else if (m.tipo === 'audio')    cuerpo = '<div class="msj-audio"><i class="ph-fill ph-play"></i><span class="onda">' +
+                                      Array.from({length:22}, (_, j) => '<span style="height:' + (5 + ((j * 7) % 16)) + 'px"></span>').join('') +
+                                      '</span><small style="font-size:11px">' + m.dur + '</small></div>';
+    else if (m.tipo === 'ubicacion')cuerpo = '<div class="msj-ubic"><img src="media/mapa.jpg" alt="Mapa" width="190" height="110">' +
+                                      '<div style="display:flex;gap:6px;align-items:center;font-size:13px"><i class="ph ph-map-pin" style="color:var(--g100)"></i>' + esc(m.lugar) + '</div></div>';
+    else if (m.tipo === 'archivo')  cuerpo = '<div class="msj-arch"><i class="ph ph-file-text"></i><div><div style="font-size:13.5px">' +
+                                      esc(m.nombre) + '</div><div style="font-size:11px;color:rgba(255,255,255,.55)">' + m.peso + '</div></div></div>';
+    else                            cuerpo = esc(m.t);
+    html += '<div class="msj ' + (mio ? 'mio' : 'suyo') + '" data-msj="' + k + '" style="animation-delay:' + Math.min(k * 40, 240) + 'ms">' +
+      cuerpo + '<span class="hora">' + m.h + '</span></div>';
+  });
+  const cont = $('#mensajes'); cont.innerHTML = html; cont.scrollTop = cont.scrollHeight;
+}
+function pintarPerfil(){
+  const yo = S.perfilDe === 'yo';
+  const p = yo ? YO : per(S.perfilDe);
+  const privado = yo ? S.perfilPrivado : false;
+  let html = '<div class="banner"><img src="' + banner(p.seed) + '" alt="" width="430" height="132"></div>' +
+    '<div class="perfil-top">' +
+      '<span class="av-wrap" style="width:92px;height:92px">' +
+        '<img class="av" src="' + avatar(p) + '" alt="" width="92" height="92" style="border:3px solid var(--bg)">' +
+        '<span class="medalla grande"><i class="ph-fill ph-check"></i></span></span>' +
+      '<div class="perfil-nom">' + esc(p.nombre) + '</div>' +
+      '<p class="perfil-desc">' + esc(p.desc || 'Sin descripción todavía.') + '</p>' +
+      '<div class="perfil-datos">' +
+        '<span class="dato"><i class="ph-fill ph-seal-check"></i>Humano verificado</span>' +
+        '<span class="dato"><i class="ph ph-trend-up"></i>' + nivelDe(p.nivel !== undefined ? p.nivel : 2) + '</span>' +
+        '<span class="dato"><i class="ph ph-users-three"></i><b>' + (p.conexiones || 27) + '</b> conexiones</span>' +
+      '</div>' +
+    '</div>';
+
+  if (yo){
+    html += '<div style="display:flex;gap:9px;margin-top:20px">' +
+      '<button class="btn-2" id="b-metricas"><i class="ph ph-chart-bar"></i> Métricas personales</button>' +
+      '<button class="btn-2" style="flex:0 0 52px" id="b-config-rapida"><i class="ph ph-gear"></i></button></div>';
+  } else {
+    html += '<div style="display:flex;gap:9px;margin-top:20px">' +
+      '<button class="btn" style="flex:1">Enviar mensaje</button>' +
+      '<button class="btn-2" style="flex:0 0 52px"><i class="ph ph-user-plus"></i></button></div>';
+  }
+
+  html += '<div class="sec-tit"><span>Lo que más mira</span></div>' +
+    PREFERENCIAS.map(t => {
+      const c = CATEGORIAS.find(x => x.id === t.cat);
+      return '<div class="tarjeta-pref" style="margin-bottom:9px"><i class="ph ' + c.i + '"></i>' +
+        '<div style="flex:1"><b>' + esc(c.n) + '</b><span>' + t.pct + '% de lo que lee</span>' +
+        '<span class="barra"><i style="width:' + t.pct + '%"></i></span></div></div>';
+    }).join('');
+
+  html += '<div class="sec-tit"><span>Publicaciones</span>' +
+    (yo ? '<span style="color:var(--fa)">Solo las ven tus conexiones</span>' : '') + '</div>';
+  if (privado && !yo){
+    html += '<div class="vacio"><i class="ph ph-lock-simple"></i><p>Este perfil es privado. Conéctate para ver lo que publica.</p></div>';
+  } else {
+    html += '<div class="grid-posts">' + Array.from({length:9}, (_, k) =>
+      '<button><img src="' + foto(p.seed + k) + '" alt="" loading="lazy" width="140" height="140"></button>').join('') + '</div>';
+  }
+  $('#cuerpo-perfil').innerHTML = html;
+  $('#cuerpo-perfil').scrollTop = 0;
+}
+function pintarMetricas(){
+  $('#cuerpo-metricas').innerHTML =
+    '<p style="font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:18px">' +
+      'Esto lo ves solo tú. No afecta tu nivel ni lo ve nadie más.</p>' +
+    '<div class="card" style="border-color:rgba(153,232,157,.28);background:rgba(38,135,78,.10)">' +
+      '<div style="display:flex;gap:12px;align-items:flex-start">' +
+        '<i class="ph ph-plant" style="font-size:24px;color:var(--g100)"></i>' +
+        '<div><b style="font-size:14.5px;color:#fff;display:block;margin-bottom:5px">Buena semana</b>' +
+        '<p style="font-size:13.5px;color:var(--mu);line-height:1.6">Entraste menos veces y te quedaste más rato en conversaciones. ' +
+        'Es exactamente el uso que hace bien.</p></div></div></div>' +
+    '<div class="sec-tit"><span>Esta sesión</span></div>' +
+    '<div class="grupo">' +
+      fila('ph-clock', 'Tiempo en la app', '6 min') +
+      fila('ph-arrows-down-up', 'Scroll acumulado', '2 min') +
+      fila('ph-chat-teardrop-text', 'Comentarios escritos', '2') +
+      fila('ph-users-three', 'Conversaciones abiertas', '1') +
+    '</div>' +
+    '<div class="sec-tit"><span>Últimos 7 días</span></div>' +
+    '<div class="grupo">' +
+      fila('ph-trend-down', 'Aperturas por día', '4,3 (antes 7,1)') +
+      fila('ph-timer', 'Tiempo promedio', '11 min por día') +
+      fila('ph-wind', 'Pausas de scroll', '3') +
+    '</div>' +
+    '<div class="sec-tit"><span>Lo que más leíste</span></div>' +
+    PREFERENCIAS.map(t => {
+      const c = CATEGORIAS.find(x => x.id === t.cat);
+      return '<div class="tarjeta-pref" style="margin-bottom:9px"><i class="ph ' + c.i + '"></i>' +
+        '<div style="flex:1"><b>' + esc(c.n) + '</b><span>' + t.pct + '% de lo que leíste</span>' +
+        '<span class="barra"><i style="width:' + t.pct + '%"></i></span></div></div>';
+    }).join('') +
+    '<div class="card" style="margin-top:14px">' +
+      '<div style="display:flex;gap:12px;align-items:flex-start">' +
+      '<i class="ph ph-moon-stars" style="font-size:22px;color:var(--ambar)"></i>' +
+      '<p style="font-size:13.5px;color:var(--mu);line-height:1.6">Tres de tus últimas entradas fueron después de medianoche. ' +
+      'No es un reto, es un dato por si quieres mirarlo.</p></div></div>';
+}
+function fila(icono, tit, valor){
+  return '<div class="fila"><i class="ph ' + icono + ' izq"></i>' +
+    '<div class="fila-txt"><div class="fila-tit" style="font-size:14px">' + tit + '</div></div>' +
+    '<span style="font-size:13.5px;color:var(--g100);font-variant-numeric:tabular-nums">' + valor + '</span></div>';
+}
+function pintarNotificaciones(){
+  $('#lista-noti').innerHTML = NOTIS.map(n => {
+    const p = n.quien ? per(n.quien) : null;
+    const av = p ? avHTML(p, 42) :
+      '<span class="av-wrap" style="width:42px;height:42px"><span class="av-sistema">V</span></span>';
+    const nombre = p ? '<b>' + esc(p.nombre) + '</b> ' : '';
+    return '<button class="noti ' + (n.nueva ? 'nueva' : '') + '" data-noti="' + n.id + '">' + av +
+      '<div class="noti-cuerpo"><div class="noti-txt">' + nombre + esc(n.txt) + '</div>' +
+      (n.det ? '<div class="noti-det">' + esc(n.det) + '</div>' : '') +
+      '<div class="noti-t">' + n.t + '</div></div>' +
+      (n.nueva ? '<span class="punto"></span>' : '') + '</button>';
+  }).join('');
+}
+function pintarComunidad(){
+  $('#cuerpo-comunidad').innerHTML =
+    '<p style="font-size:13.5px;color:var(--mu);line-height:1.6;margin-bottom:20px">' +
+      'VERA la deciden quienes la usan. Una persona verificada, un voto.</p>' +
+    '<div class="sec-tit"><span>Votaciones abiertas</span></div>' +
+    VOTACIONES.map(v => {
+      const total = v.opciones.reduce((a, o) => a + o.v, 0) + (v.votado !== null ? 1 : 0);
+      return '<div class="card" data-votacion="' + v.id + '">' +
+        '<b style="font-size:15px;color:#fff;display:block;line-height:1.4">' + esc(v.titulo) + '</b>' +
+        '<p style="font-size:13px;color:var(--mu);line-height:1.6;margin:8px 0 14px">' + esc(v.detalle) + '</p>' +
+        v.opciones.map((o, i) => {
+          const votos = o.v + (v.votado === i ? 1 : 0);
+          const pct = total ? Math.round(votos / total * 100) : 0;
+          return '<button class="voto-op ' + (v.votado === i ? 'elegida' : '') + '" data-voto="' + v.id + '|' + i + '">' +
+            '<span class="relleno" style="width:' + (v.votado !== null ? pct : 0) + '%"></span>' +
+            '<span class="et">' + esc(o.t) + '</span>' +
+            (v.votado !== null ? '<span class="pc">' + pct + '%</span>' : '') + '</button>';
+        }).join('') +
+        '<div style="font-size:11.5px;color:var(--fa);margin-top:4px">' + v.cierra +
+          (v.votado !== null ? ' · ya votaste' : '') + '</div></div>';
+    }).join('') +
+    '<div class="sec-tit"><span>Buzon</span></div>' +
+    '<div class="card"><p style="font-size:13.5px;color:var(--mu);line-height:1.6;margin-bottom:12px">' +
+      'Cuéntanos qué se rompió o qué echas de menos. Lo leemos todo.</p>' +
+      '<div class="campo"><textarea id="buzon-txt" rows="4" placeholder="Escribe acá"></textarea></div>' +
+      '<button class="btn" id="b-buzon">Enviar al buzon</button></div>';
+}
+function pintarConfig(){
+  $('#cuerpo-config').innerHTML =
+    '<div class="grupo">' +
+      filaNav('ph-user', 'Perfil', 'Nombre, foto, descripción') +
+      filaNav('ph-device-mobile', 'App', 'Idioma, datos, almacenamiento') +
+      filaNav('ph-identification-card', 'Cuenta', 'Códigos de invitación, cerrar cuenta') +
+    '</div>' +
+    '<div class="grupo">' +
+      '<div class="fila"><i class="ph ph-eye izq"></i><div class="fila-txt">' +
+        '<div class="fila-tit" style="font-size:14px">Perfil privado</div>' +
+        '<div class="fila-sub">Solo tus conexiones ven lo que publicas</div></div>' +
+        '<span class="switch ' + (S.perfilPrivado ? 'on' : '') + '" id="sw-privado"></span></div>' +
+      filaNav('ph-shield-check', 'Seguridad', 'Llave de acceso, dispositivos') +
+      filaNav('ph-palette', 'Apariencia', 'Tema, tamaño de letra') +
+    '</div>' +
+    '<div class="grupo">' +
+      filaNav('ph-question', 'Ayuda', 'Abrir un ticket de asistencia') +
+      filaNav('ph-lifebuoy', 'Sobre VERA', 'Qué hacemos y qué no hacemos') +
+    '</div>' +
+    '<p style="font-size:12px;color:var(--fa);line-height:1.7;padding:0 4px 10px">' +
+      'VERA no vende tus datos, no mide cuánto tiempo pasas acá y no tiene publicidad fuera de la categoría Empresas.</p>' +
+    '<button class="btn-2" id="b-salir-cuenta">Cerrar sesión</button>';
+}
+function filaNav(icono, tit, sub){
+  return '<button class="fila"><i class="ph ' + icono + ' izq"></i>' +
+    '<div class="fila-txt"><div class="fila-tit" style="font-size:14px">' + tit + '</div>' +
+    '<div class="fila-sub">' + sub + '</div></div>' +
+    '<i class="ph ph-caret-right" style="color:var(--fa)"></i></button>';
+}
+function pintarEmpresa(){
+  const e = EMPRESAS.find(x => x.id === S.empresaActual);
+  const posts = POSTS_CAT.empresas.filter(p => p.empresa === e.id);
+  $('#cuerpo-empresa').innerHTML =
+    '<div class="banner"><img src="' + banner(e.seed) + '" alt="" width="430" height="132"></div>' +
+    '<div class="perfil-top">' +
+      '<span class="av-wrap" style="width:92px;height:92px">' +
+        '<img class="av" src="' + e.img + '" alt="" width="92" height="92" style="border:3px solid var(--bg)"></span>' +
+      '<div class="perfil-nom">' + esc(e.nombre) + '</div>' +
+      '<div style="margin-top:8px"><span class="chip-empresa">Empresa</span></div>' +
+      '<p class="perfil-desc">' + esc(e.desc) + '</p>' +
+      '<div class="perfil-datos"><span class="dato"><i class="ph ph-storefront"></i>' + esc(e.rubro) + '</span></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:9px;margin-top:20px"><button class="btn" style="flex:1">Escribirle</button></div>' +
+    '<p style="font-size:12px;color:var(--fa);text-align:center;margin-top:10px;line-height:1.6">' +
+      'Las empresas solo pueden responder. Nunca escriben primero.</p>' +
+    '<div class="sec-tit"><span>Publicaciones en Empresas</span></div>' +
+    posts.map(postHTML).join('');
+}
+
+/* ---------------------------- Grafo de Mi Red ---------------------------- */
+function dibujarGrafo(){
+  const c = $('#grafo'); if (!c) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.parentElement.clientWidth, h = 330;
+  c.width = w * dpr; c.height = h * dpr; c.style.height = h + 'px';
+  const x = c.getContext('2d'); x.scale(dpr, dpr); x.clearRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2, N = P.length;
+  const nodos = P.map((p, i) => {
+    const ang = (i / N) * Math.PI * 2 - Math.PI / 2;
+    const rad = (i % 2 ? 0.78 : 1) * Math.min(w, h) * 0.40;
+    return { p, x:cx + Math.cos(ang) * rad, y:cy + Math.sin(ang) * rad, r: 9 + (p.nivel || 1) };
+  });
+  // Aristas entre conexiones que tambien se conocen entre si
+  x.strokeStyle = 'rgba(115,200,131,.13)'; x.lineWidth = 1;
+  nodos.forEach((n, i) => {
+    [1, 4, 7].forEach(salto => {
+      const m = nodos[(i + salto) % N];
+      x.beginPath(); x.moveTo(n.x, n.y); x.lineTo(m.x, m.y); x.stroke();
+    });
+  });
+  x.strokeStyle = 'rgba(115,200,131,.30)';
+  nodos.forEach(n => { x.beginPath(); x.moveTo(cx, cy); x.lineTo(n.x, n.y); x.stroke(); });
+
+  nodos.forEach(n => {
+    x.beginPath(); x.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    x.fillStyle = 'rgba(77,167,104,.85)'; x.fill();
+    x.strokeStyle = 'rgba(153,232,157,.5)'; x.lineWidth = 1; x.stroke();
+  });
+  const grad = x.createRadialGradient(cx, cy, 2, cx, cy, 26);
+  grad.addColorStop(0, '#99E89D'); grad.addColorStop(1, '#26874E');
+  x.beginPath(); x.arc(cx, cy, 20, 0, Math.PI * 2); x.fillStyle = grad; x.fill();
+  x.fillStyle = '#04140a'; x.font = '600 12px Inter, sans-serif';
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('Tu', cx, cy);
+
+  c.onclick = ev => {
+    const r = c.getBoundingClientRect();
+    const px = ev.clientX - r.left, py = ev.clientY - r.top;
+    const hit = nodos.find(n => Math.hypot(n.x - px, n.y - py) < n.r + 9);
+    if (hit){ S.perfilDe = hit.p.id; ir('perfil'); }
+  };
+}
+
+/* ---------------------------- Hojas inferiores ---------------------------- */
+function cerrarHojas(){ $$('.velo,.hoja,.drawer').forEach(e => e.remove()); }
+function abrirHoja(titulo, cuerpoHTML, pieHTML){
+  cerrarHojas();
+  const velo = document.createElement('div'); velo.className = 'velo'; velo.onclick = cerrarHojas;
+  const hoja = document.createElement('div'); hoja.className = 'hoja';
+  hoja.innerHTML = '<div class="asa"></div>' +
+    '<div class="hoja-head"><h2>' + esc(titulo) + '</h2>' +
+    '<button class="icon-btn" data-cerrar="1"><i class="ph ph-x"></i></button></div>' +
+    '<div class="hoja-cuerpo">' + cuerpoHTML + '</div>' +
+    (pieHTML ? '<div style="padding:12px 16px calc(env(safe-area-inset-bottom) + 14px);border-top:1px solid var(--linea2)">' + pieHTML + '</div>' : '');
+  document.body.append(velo, hoja);
+  hoja.querySelector('[data-cerrar]').onclick = cerrarHojas;
+  return hoja;
+}
+function abrirComentarios(postId){
+  const lista = COMENTARIOS[postId] || [];
+  const cuerpo = (lista.length ? lista.map(c => {
+    const p = per(c.autor);
+    return '<div class="comentario">' + avHTML(p, 36) +
+      '<div><div class="card-nom" style="font-size:13.5px">' + esc(p.nombre) + '</div>' +
+      '<p>' + esc(c.texto) + '</p></div></div>';
+  }).join('') : '<div class="vacio"><i class="ph ph-chat-teardrop-dots"></i><p>Nadie ha comentado todavía. Parte tú.</p></div>');
+  const pie = '<div style="display:flex;gap:8px;align-items:center">' +
+    '<input id="txt-comentario" placeholder="Escribe un comentario" ' +
+    'style="flex:1;padding:12px 15px;border-radius:var(--r-pill);border:1px solid var(--linea);background:rgba(0,0,0,.3);font-size:15px">' +
+    '<button class="icon-btn" style="background:var(--g400);color:#fff" id="b-comentar-ok"><i class="ph ph-paper-plane-right"></i></button></div>';
+  const hoja = abrirHoja('Comentarios', cuerpo, pie);
+  hoja.querySelector('#b-comentar-ok').onclick = () => {
+    const inp = hoja.querySelector('#txt-comentario');
+    const t = inp.value.trim(); if (!t) return;
+    (COMENTARIOS[postId] = COMENTARIOS[postId] || []).push({ autor:'yo', texto:t });
+    // Doctrina 2.6: el post se clasifica en el servidor y el autor del comentario NUNCA lo ve.
+    abrirComentarios(postId);
+  };
+}
+function abrirCompositor(catId){
+  const cat = CATEGORIAS.find(c => c.id === catId);
+  const cuerpo = '<p style="font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:12px">' +
+    'Publicas en <b style="color:var(--g100)">' + esc(cat.n) + '</b>. Si el contenido no corresponde a la categoría, ' +
+    'la publicación se baja y no puedes publicar por un tiempo.</p>' +
+    '<textarea id="txt-post" placeholder="Qué quieres contar"></textarea>';
+  const hoja = abrirHoja('Nueva publicación', cuerpo, '<button class="btn" id="b-publicar-ok">Publicar</button>');
+  hoja.querySelector('#b-publicar-ok').onclick = () => {
+    const t = hoja.querySelector('#txt-post').value.trim(); if (!t) return;
+    POSTS_CAT[catId].unshift({ id:catId + '-nuevo-' + Date.now(), autor:'yo', cat:catId, texto:t,
+      foto:null, comentarios:0, tiempo:'recien', guardado:false });
+    cerrarHojas(); pintarCategoria();
+  };
+}
+function abrirDrawer(){
+  cerrarHojas();
+  const velo = document.createElement('div'); velo.className = 'velo'; velo.onclick = cerrarHojas;
+  const d = document.createElement('div'); d.className = 'drawer';
+  d.innerHTML = '<div style="display:flex;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--linea2);margin-bottom:10px">' +
+    avHTML(YO, 46) + '<div><div style="font-size:15px;color:#fff">' + esc(YO.nombre) + '</div>' +
+    '<div style="font-size:12px;color:var(--g100)">' + nivelDe(YO.nivel) + '</div></div></div>' +
+    [['notificaciones','ph-bell','Notificaciones'], ['comunidad','ph-scales','Comunidad'],
+     ['metricas','ph-chart-bar','Métricas personales'], ['empresa','ph-buildings','Empresas'],
+     ['config','ph-gear','Configuración']].map(([v, i, n]) =>
+      '<button class="fila" data-drawer="' + v + '"><i class="ph ' + i + ' izq"></i>' +
+      '<div class="fila-txt"><div class="fila-tit" style="font-size:14.5px">' + n + '</div></div></button>').join('') +
+    '<div style="flex:1"></div>' +
+    '<p style="font-size:11.5px;color:var(--fa);line-height:1.6;padding:14px 4px 0;border-top:1px solid var(--linea2)">' +
+    'Tu código de invitación: <b style="color:var(--g100)">VERA-3PQ9</b><br>Te quedan 2 invitaciones.</p>';
+  document.body.append(velo, d);
+  d.querySelectorAll('[data-drawer]').forEach(b => b.onclick = () => { cerrarHojas(); ir(b.dataset.drawer); });
+}
+
+/* ---------------------------- Mecanicas de bienestar ---------------------------- */
+function reiniciarScrollSesion(){ S.scrollActivo = 0; }
+function umbralesStop(){
+  const u = CFG.STOP_SCROLL_STEPS_MIN.map(seg);
+  for (let k = 1; k <= 6; k++) u.push(seg(CFG.STOP_SCROLL_STEPS_MIN[2] + CFG.STOP_SCROLL_LUEGO_MIN * k));
+  return u;
+}
+setInterval(() => {
+  if (Date.now() - S.scrollActivo < 4000) {
+    S.scrollSeg++;
+    const u = umbralesStop();
+    const idx = u.findIndex(v => S.scrollSeg >= v && !S.hitos.includes(v));
+    if (idx > -1){ S.hitos.push(u[idx]); pantallaStop(); }
+  }
+}, 1000);
+document.addEventListener('scroll', e => {
+  if (e.target && e.target.dataset && e.target.dataset.scroll) S.scrollActivo = Date.now();
+}, true);
+
+function pantallaStop(){
+  if ($('#ov-stop')) return;
+  cerrarHojas();
+  // Mientras no haya videos en R2 se muestra el aviso de concientizacion, con las mismas dos salidas.
+  const dur = Math.max(6, Math.round(CFG.STOP_VIDEO_S / 3));
+  const ov = document.createElement('div'); ov.className = 'bienestar'; ov.id = 'ov-stop';
+  ov.innerHTML =
+    '<div class="aro"><svg viewBox="0 0 118 118"><circle class="pista" cx="59" cy="59" r="55"></circle>' +
+    '<circle class="avance" cx="59" cy="59" r="55" stroke-dasharray="345.6" stroke-dashoffset="0"></circle></svg>' +
+    '<b id="stop-num">' + dur + '</b></div>' +
+    '<h2>Llevas un buen rato desplazando.</h2>' +
+    '<p>Tómate estos segundos. Lo que estabas leyendo no se va a mover de donde está.</p>' +
+    '<div class="acciones">' +
+      '<button class="btn" id="stop-seguir" disabled>Puedes continuar en ' + dur + ' s</button>' +
+      '<button class="btn-2" id="stop-salir">Salir de la app</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  let q = dur;
+  const aro = ov.querySelector('.avance');
+  const tick = setInterval(() => {
+    q--;
+    ov.querySelector('#stop-num').textContent = Math.max(q, 0);
+    aro.style.strokeDashoffset = (345.6 * (1 - q / dur)).toFixed(1);
+    const b = ov.querySelector('#stop-seguir');
+    if (q <= 0){
+      clearInterval(tick);
+      b.disabled = false; b.textContent = 'Continuar';
+      b.onclick = () => { ov.remove(); S.scrollSeg = 0; };
+    } else { b.textContent = 'Puedes continuar en ' + q + ' s'; }
+  }, 1000);
+  ov.querySelector('#stop-salir').onclick = () => {
+    clearInterval(tick); ov.remove(); S.scrollSeg = 0; pantallaCierre();
+  };
+}
+function pantallaCierre(){
+  const ov = document.createElement('div'); ov.className = 'bienestar';
+  ov.innerHTML = '<div style="font-family:Cinzel,serif;letter-spacing:.22em;font-size:15px;color:var(--g100);margin-bottom:24px">VERA</div>' +
+    '<h2>Nos vemos cuando quieras volver.</h2>' +
+    '<p>Nada se pierde mientras no estás. Tu círculo sigue donde mismo.</p>' +
+    '<div class="acciones"><button class="btn-2" id="cierre-volver">Volver a la app</button></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('#cierre-volver').onclick = () => ov.remove();
+}
+function pantallaRafaga(){
+  if ($('#ov-rafaga')) return;
+  cerrarHojas();
+  const ov = document.createElement('div'); ov.className = 'bienestar'; ov.id = 'ov-rafaga';
+  ov.innerHTML =
+    '<div class="respira"><span id="respira-txt">Inhala</span></div>' +
+    '<h2 style="margin-top:20px">Volviste rápido, y está bien.</h2>' +
+    '<p>Antes de seguir, tres respiraciones. Inhala mientras el círculo crece, exhala mientras baja.</p>' +
+    '<div class="ciclos" id="ciclos">Respiración 1 de 3</div>' +
+    '<div class="acciones"><button class="btn" id="rafaga-ok" disabled>Continuar</button></div>';
+  document.body.appendChild(ov);
+  // Ciclo 4-6: 4 s inhalar, 6 s exhalar.
+  let c = 1, fase = 0;
+  const txt = ov.querySelector('#respira-txt');
+  const paso = () => {
+    if (fase === 0){ txt.textContent = 'Inhala'; fase = 1; setTimeout(paso, 4000); }
+    else {
+      txt.textContent = 'Exhala'; fase = 0;
+      setTimeout(() => {
+        c++;
+        if (c > 3){
+          txt.textContent = 'Listo';
+          const b = ov.querySelector('#rafaga-ok');
+          b.disabled = false; b.onclick = () => ov.remove();
+          ov.querySelector('#ciclos').textContent = 'Tómate el tiempo que necesites';
+        } else { ov.querySelector('#ciclos').textContent = 'Respiración ' + c + ' de 3'; paso(); }
+      }, 6000);
+    }
+  };
+  paso();
+}
+function registrarApertura(){
+  const ahora = Date.now();
+  const ventana = CFG.RAFAGA_VENTANA_MIN * 60000;
+  S.aperturas = S.aperturas.filter(t => ahora - t < ventana);
+  S.aperturas.push(ahora);
+  if (S.aperturas.length >= CFG.RAFAGA_APERTURAS) { S.aperturas = []; pantallaRafaga(); }
+}
+
+/* ---------------------------- Eventos ---------------------------- */
+$('#b-entrar').onclick = () => entrarApp();
+$('#b-entrar-demo').onclick = () => entrarApp();
+$('#b-ir-registro').onclick = () => { $('#p-login').hidden = true; $('#p-registro').hidden = false; };
+$('#b-reg-atras').onclick = () => { $('#p-registro').hidden = true; $('#p-login').hidden = false; pasoRegistro(1); };
+$('#b-empresas').onclick = () => {
+  abrirHoja('Acceso para empresas',
+    '<p style="font-size:13.5px;color:var(--mu);line-height:1.65;margin-bottom:16px">' +
+    'Las cuentas de empresa se crean con una revisión previa. En VERA una empresa puede publicar en la categoría Empresas ' +
+    'y responder mensajes, nunca iniciarlos.</p>' +
+    '<div class="campo"><label for="e-rut">RUT de la empresa</label><input id="e-rut" placeholder="76.543.210-K"></div>' +
+    '<div class="campo"><label for="e-mail">Correo de contacto</label><input id="e-mail" type="email" placeholder="contacto@tuempresa.cl"></div>',
+    '<button class="btn" onclick="document.querySelectorAll(String.raw`.velo,.hoja`).forEach(e=>e.remove())">Solicitar cuenta</button>');
+};
+$$('#p-registro [data-paso]').forEach(b => b.onclick = () => pasoRegistro(Number(b.dataset.paso)));
+function pasoRegistro(n){
+  [1, 2, 3, 4].forEach(k => { $('#reg-' + k).hidden = k !== n; });
+  $$('#reg-pasos i').forEach((el, k) => el.classList.toggle('on', k < n));
+}
+function entrarApp(){
+  $('#p-login').hidden = true; $('#p-registro').hidden = true;
+  $('#app').hidden = false; $('#demo').hidden = false;
+  ir('socialis');
+  registrarApertura();
+}
+
+$('#b-menu').onclick = abrirDrawer;
+$('#b-atras').onclick = atras;
+$('#b-noti').onclick = () => ir('notificaciones');
+$$('#nav button').forEach(b => b.onclick = () => { S.perfilDe = 'yo'; S.pila = []; ir(b.dataset.v); });
+
+document.body.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-cat],[data-post] [data-comentar],[data-guardar],[data-chat],[data-persona],' +
+    '[data-noti],[data-voto],[data-aceptar],[data-rechazar],[data-demo],#b-publicar,#b-metricas,#b-config-rapida,' +
+    '#sw-privado,#b-buzon,#b-salir-cuenta,#demo-abrir');
+  if (!t) return;
+
+  if (t.dataset.cat){ S.catActual = t.dataset.cat; ir('categoria'); }
+  else if (t.dataset.comentar) abrirComentarios(t.dataset.comentar);
+  else if (t.dataset.guardar){
+    const id = t.dataset.guardar;
+    S.guardados.has(id) ? S.guardados.delete(id) : S.guardados.add(id);
+    const on = S.guardados.has(id);
+    t.classList.toggle('guardado', on);
+    t.innerHTML = '<i class="' + (on ? 'ph-fill' : 'ph') + ' ph-bookmark-simple"></i>' + (on ? 'Guardado' : 'Guardar');
+  }
+  else if (t.dataset.chat){ S.chatActual = t.dataset.chat; ir('conversacion'); }
+  else if (t.dataset.persona){ S.perfilDe = t.dataset.persona; ir('perfil'); }
+  else if (t.dataset.noti){
+    const n = NOTIS.find(x => x.id === t.dataset.noti);
+    if (n){ n.nueva = false; actualizarBadge(); pintarNotificaciones(); ir(n.va); }
+  }
+  else if (t.dataset.voto){
+    const [vid, i] = t.dataset.voto.split('|');
+    const v = VOTACIONES.find(x => x.id === vid);
+    if (v && v.votado === null){ v.votado = Number(i); pintarComunidad(); }
+  }
+  else if (t.dataset.aceptar){
+    const id = t.dataset.aceptar;
+    SOLICITUDES = SOLICITUDES.filter(s => s.de !== id); YO.conexiones++; pintarRed();
+  }
+  else if (t.dataset.rechazar){
+    SOLICITUDES = SOLICITUDES.filter(s => s.de !== t.dataset.rechazar); pintarRed();
+  }
+  else if (t.id === 'b-publicar') abrirCompositor(S.catActual);
+  else if (t.id === 'b-metricas') ir('metricas');
+  else if (t.id === 'b-config-rapida') ir('config');
+  else if (t.id === 'sw-privado'){ S.perfilPrivado = !S.perfilPrivado; t.classList.toggle('on', S.perfilPrivado); }
+  else if (t.id === 'b-buzon'){
+    const ta = $('#buzon-txt'); if (!ta.value.trim()) return;
+    ta.value = ''; ta.placeholder = 'Recibido. Gracias por escribir.';
+  }
+  else if (t.id === 'b-salir-cuenta'){
+    $('#app').hidden = true; $('#demo').hidden = true; $('#p-login').hidden = false; S.pila = [];
+  }
+  else if (t.id === 'demo-abrir'){
+    const c = $('#demo-cuerpo'); c.hidden = !c.hidden;
+  }
+  else if (t.dataset.demo){
+    $('#demo-cuerpo').hidden = true;
+    const d = t.dataset.demo;
+    if (d === 'stop') pantallaStop();
+    if (d === 'rafaga') pantallaRafaga();
+    if (d === 'propaganda'){
+      S.catActual = 'bienestar'; ir('categoria');
+      setTimeout(() => {
+        const p = $('#feed-categoria .propaganda');
+        if (p) p.scrollIntoView({ behavior:'smooth', block:'center' });
+      }, 120);
+    }
+    if (d === 'empresa'){ S.empresaActual = 'trigales'; ir('empresa'); }
+    if (d === 'reset') location.reload();
+  }
+});
+
+// Reaccion oculta a un mensaje: mantener presionado. El otro nunca la ve.
+let tempLargo;
+$('#mensajes').addEventListener('pointerdown', ev => {
+  const m = ev.target.closest('.msj'); if (!m) return;
+  tempLargo = setTimeout(() => menuReaccion(m), 420);
+});
+['pointerup','pointercancel','pointerleave'].forEach(e =>
+  $('#mensajes').addEventListener(e, () => clearTimeout(tempLargo)));
+function menuReaccion(msj){
+  $$('.reac').forEach(e => e.remove());
+  const r = document.createElement('div'); r.className = 'reac';
+  r.innerHTML = '<button data-r="pos"><i class="ph ph-thumbs-up" style="color:var(--g100)"></i></button>' +
+                '<button data-r="neg"><i class="ph ph-thumbs-down" style="color:var(--mu)"></i></button>';
+  const b = msj.getBoundingClientRect();
+  r.style.left = Math.max(12, Math.min(b.left, window.innerWidth - 120)) + 'px';
+  r.style.top = (b.top - 54) + 'px';
+  document.body.appendChild(r);
+  r.querySelectorAll('button').forEach(x => x.onclick = () => {
+    // Se registra en el servidor y afecta el score del autor. Nunca se muestra a nadie.
+    r.remove();
+  });
+  setTimeout(() => document.addEventListener('click', () => r.remove(), { once:true }), 0);
+}
+$('#b-enviar').onclick = () => {
+  const i = $('#txt-msj'); const t = i.value.trim(); if (!t) return;
+  const h = new Date().toTimeString().slice(0, 5);
+  (MENSAJES[S.chatActual] = MENSAJES[S.chatActual] || []).push({ de:'yo', t, h });
+  const ch = CHATS.find(c => c.id === S.chatActual); ch.ultimo = t; ch.hora = h;
+  i.value = ''; pintarConversacion();
+};
+$('#txt-msj').addEventListener('keydown', e => { if (e.key === 'Enter') $('#b-enviar').click(); });
+
+$('#buscar-persona').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  const res = $('#resultados-busqueda'), normal = $('#red-normal');
+  if (!q){ res.innerHTML = ''; normal.hidden = false; return; }
+  normal.hidden = true;
+  const hits = P.filter(p => p.nombre.toLowerCase().includes(q));
+  res.innerHTML = hits.length ? hits.map(p =>
+    '<div class="fila">' + avHTML(p, 44) +
+    '<div class="fila-txt"><div class="fila-tit">' + esc(p.nombre) + '</div>' +
+    '<div class="fila-sub">' + nivelDe(p.nivel) + '</div></div>' +
+    '<button class="pill">Conectar</button></div>').join('')
+    : '<div class="vacio"><i class="ph ph-magnifying-glass"></i><p>Nadie con ese nombre. En VERA solo aparecen personas verificadas.</p></div>';
+});
+
+function actualizarBadge(){
+  const n = NOTIS.filter(x => x.nueva).length;
+  const b = $('#badge-noti'); b.textContent = n; b.hidden = n === 0;
+}
+window.addEventListener('resize', () => { if (S.vista === 'red') dibujarGrafo(); });
+
+actualizarBadge();
+pasoRegistro(1);
+</script>
+</body>
+</html>
