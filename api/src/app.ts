@@ -1,16 +1,23 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import cookie from '@fastify/cookie';
+import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import type { Entorno } from './config.js';
 import type { BaseDatos } from './db/cliente.js';
 import { pluginAutenticacion } from './plugins/autenticacion.js';
 import { registrarRutasSalud } from './rutas/salud.js';
 import { registrarRutasAuth } from './rutas/auth.js';
+import { registrarRutasVerificacion } from './rutas/verificacion.js';
+import { registrarRutasAdmin } from './rutas/admin.js';
+import type { Almacenamiento } from './servicios/almacenamiento.js';
+import type { ValidadorSelfie } from './servicios/selfie.js';
 
 export interface OpcionesApp {
   entorno: Entorno;
   /** Sin base de datos la app levanta igual, pero solo con la sonda de salud. */
   db?: BaseDatos;
+  almacenamiento?: Almacenamiento;
+  validadorSelfie?: ValidadorSelfie;
   /**
    * Los tests apagan el rate limiting: si no, la propia suite se autobloquea al
    * registrar varias cuentas seguidas. El límite tiene su test dedicado, que
@@ -26,6 +33,8 @@ export interface OpcionesApp {
 export async function construirApp({
   entorno,
   db,
+  almacenamiento,
+  validadorSelfie,
   limitarPeticiones = entorno.NODE_ENV !== 'test',
 }: OpcionesApp): Promise<FastifyInstance> {
   const app = Fastify({
@@ -41,6 +50,10 @@ export async function construirApp({
   });
 
   await app.register(cookie, { secret: entorno.COOKIE_SECRET });
+
+  await app.register(multipart, {
+    limits: { fileSize: 8 * 1024 * 1024, files: 1 },
+  });
 
   if (limitarPeticiones) {
     await app.register(rateLimit, {
@@ -63,6 +76,15 @@ export async function construirApp({
         nombreApp: 'VERA SOCIALIS',
       },
     });
+
+    if (almacenamiento && validadorSelfie) {
+      await app.register(registrarRutasVerificacion, {
+        db,
+        almacenamiento,
+        validador: validadorSelfie,
+      });
+      await app.register(registrarRutasAdmin, { db, almacenamiento });
+    }
   }
 
   return app;

@@ -12,3 +12,6 @@ playwright-report/
 test-results/
 .vite/
 *.tsbuildinfo
+
+# Archivos locales de desarrollo (en produccion van a R2)
+.archivos-locales/
