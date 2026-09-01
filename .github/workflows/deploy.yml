@@ -1,0 +1,91 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      entorno:
+        description: Entorno al que desplegar
+        type: choice
+        options: [staging, produccion]
+        default: staging
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGION: southamerica-west1
+  SERVICIO: vera-api
+
+jobs:
+  desplegar:
+    name: Cloud Run · ${{ inputs.entorno || 'staging' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.entorno || 'staging' }}
+
+    permissions:
+      contents: read
+      id-token: write # para autenticarse en GCP sin llaves de servicio
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Workload Identity Federation: GitHub se autentica contra GCP sin que
+      # exista ninguna llave de servicio guardada en el repo.
+      - name: Autenticar en Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configurar Docker para Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Construir y publicar la imagen
+        env:
+          IMAGEN: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROYECTO }}/vera/api
+        run: |
+          docker build -f api/Dockerfile -t "$IMAGEN:${{ github.sha }}" -t "$IMAGEN:latest" .
+          docker push "$IMAGEN:${{ github.sha }}"
+          docker push "$IMAGEN:latest"
+
+      - name: Aplicar migraciones
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          npm ci
+          npm run db:migrate
+
+      - name: Desplegar en Cloud Run
+        env:
+          IMAGEN: ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROYECTO }}/vera/api
+        run: |
+          gcloud run deploy "${{ env.SERVICIO }}-${{ inputs.entorno || 'staging' }}" \
+            --image "$IMAGEN:${{ github.sha }}" \
+            --region "${{ env.REGION }}" \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --cpu 1 --memory 512Mi \
+            --min-instances 0 --max-instances 3 \
+            --set-env-vars "NODE_ENV=production,WEBAUTHN_RP_ID=${{ vars.WEBAUTHN_RP_ID }},WEBAUTHN_ORIGEN=${{ vars.WEBAUTHN_ORIGEN }}" \
+            --set-secrets "DATABASE_URL=vera-database-url:latest,COOKIE_SECRET=vera-cookie-secret:latest,CLAUDE_API_KEY=vera-claude-api-key:latest,R2_ACCOUNT_ID=vera-r2-account-id:latest,R2_ACCESS_KEY_ID=vera-r2-access-key-id:latest,R2_SECRET_ACCESS_KEY=vera-r2-secret-access-key:latest,R2_BUCKET=vera-r2-bucket:latest"
+
+      - name: Verificar que quedó viva
+        run: |
+          URL=$(gcloud run services describe "${{ env.SERVICIO }}-${{ inputs.entorno || 'staging' }}" \
+            --region "${{ env.REGION }}" --format 'value(status.url)')
+          echo "Desplegado en $URL"
+          for intento in $(seq 1 10); do
+            if curl -sf "$URL/salud" > /dev/null; then
+              echo "La sonda de salud responde."
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "La sonda de salud no respondió tras el deploy."
+          exit 1
