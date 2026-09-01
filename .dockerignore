@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/build
+**/coverage
+.git
+.github
+docs
+tasks
+prototipo
+web/src
+web/public
+e2e
+*.md
+.env
+.env.*

@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: vera-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vera
+      POSTGRES_PASSWORD: vera_local
+      POSTGRES_DB: vera_socialis
+    # 5433 por defecto para no chocar con otros Postgres locales; se ajusta con DB_PUERTO.
+    ports:
+      - '${DB_PUERTO:-5433}:5432'
+    volumes:
+      - vera-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vera -d vera_socialis']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  vera-db-data:
