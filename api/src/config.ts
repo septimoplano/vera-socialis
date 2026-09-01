@@ -13,6 +13,16 @@ const esquemaEntorno = z.object({
   HOST: z.string().default('0.0.0.0'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   DATABASE_URL: z.string().url().optional(),
+
+  /** Firma las cookies. En producción es obligatorio y debe venir del entorno. */
+  COOKIE_SECRET: z.string().min(32).default('desarrollo-local-cambiar-en-produccion-32+'),
+
+  /**
+   * WebAuthn exige un dominio estable con HTTPS. En desarrollo es localhost;
+   * en producción se completa cuando el fundador entregue el dominio (tarea B5).
+   */
+  WEBAUTHN_RP_ID: z.string().default('localhost'),
+  WEBAUTHN_ORIGEN: z.string().url().default('http://localhost:5173'),
 });
 
 export type Entorno = z.infer<typeof esquemaEntorno>;
@@ -25,5 +35,21 @@ export function cargarEntorno(fuente: NodeJS.ProcessEnv = process.env): Entorno 
       .join(' · ');
     throw new Error(`Configuración de entorno inválida — ${detalle}`);
   }
-  return resultado.data;
+
+  const entorno = resultado.data;
+
+  // En producción no se arranca con los valores de desarrollo puestos.
+  if (entorno.NODE_ENV === 'production') {
+    if (entorno.COOKIE_SECRET.startsWith('desarrollo-local')) {
+      throw new Error('COOKIE_SECRET no puede quedar en el valor de desarrollo en producción.');
+    }
+    if (!entorno.DATABASE_URL) {
+      throw new Error('DATABASE_URL es obligatoria en producción.');
+    }
+    if (entorno.WEBAUTHN_RP_ID === 'localhost') {
+      throw new Error('WEBAUTHN_RP_ID debe ser el dominio real en producción.');
+    }
+  }
+
+  return entorno;
 }

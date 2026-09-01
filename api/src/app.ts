@@ -1,16 +1,33 @@
 import Fastify, { type FastifyInstance } from 'fastify';
+import cookie from '@fastify/cookie';
+import rateLimit from '@fastify/rate-limit';
 import type { Entorno } from './config.js';
+import type { BaseDatos } from './db/cliente.js';
+import { pluginAutenticacion } from './plugins/autenticacion.js';
 import { registrarRutasSalud } from './rutas/salud.js';
+import { registrarRutasAuth } from './rutas/auth.js';
 
 export interface OpcionesApp {
   entorno: Entorno;
+  /** Sin base de datos la app levanta igual, pero solo con la sonda de salud. */
+  db?: BaseDatos;
+  /**
+   * Los tests apagan el rate limiting: si no, la propia suite se autobloquea al
+   * registrar varias cuentas seguidas. El límite tiene su test dedicado, que
+   * levanta una app con esto en true.
+   */
+  limitarPeticiones?: boolean;
 }
 
 /**
  * Fábrica de la app. Se construye sin escuchar puerto para que los tests
  * la levanten con `app.inject()` sin abrir sockets.
  */
-export async function construirApp({ entorno }: OpcionesApp): Promise<FastifyInstance> {
+export async function construirApp({
+  entorno,
+  db,
+  limitarPeticiones = entorno.NODE_ENV !== 'test',
+}: OpcionesApp): Promise<FastifyInstance> {
   const app = Fastify({
     logger:
       entorno.NODE_ENV === 'test'
@@ -20,9 +37,33 @@ export async function construirApp({ entorno }: OpcionesApp): Promise<FastifyIns
             // Nunca loguear ciphertext, material de clave ni PII (spec §8).
             redact: ['req.headers.authorization', 'req.headers.cookie'],
           },
+    trustProxy: entorno.NODE_ENV === 'production',
   });
 
+  await app.register(cookie, { secret: entorno.COOKIE_SECRET });
+
+  if (limitarPeticiones) {
+    await app.register(rateLimit, {
+      global: false,
+      max: 120,
+      timeWindow: '1 minute',
+    });
+  }
+
   await app.register(registrarRutasSalud);
+
+  if (db) {
+    await app.register(pluginAutenticacion, { db });
+    await app.register(registrarRutasAuth, {
+      db,
+      produccion: entorno.NODE_ENV === 'production',
+      webauthn: {
+        rpID: entorno.WEBAUTHN_RP_ID,
+        origen: entorno.WEBAUTHN_ORIGEN,
+        nombreApp: 'VERA SOCIALIS',
+      },
+    });
+  }
 
   return app;
 }

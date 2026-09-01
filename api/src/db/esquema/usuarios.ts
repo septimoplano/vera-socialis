@@ -25,6 +25,12 @@ export const usuarios = pgTable(
     estado: estadoCuenta('estado').notNull().default('pendiente_verificacion'),
 
     /**
+     * argon2id. Es opcional: una cuenta puede quedarse solo con passkey.
+     * Sirve de vía de recuperación si la persona pierde el dispositivo.
+     */
+    claveHash: text('clave_hash'),
+
+    /**
      * Único dato de identidad que se guarda: el HECHO de ser humano verificado.
      * Nunca documentos ni plantillas biométricas (spec §8).
      */
@@ -134,6 +140,26 @@ export const sesiones = pgTable(
     uniqueIndex('sesiones_token_hash_idx').on(tabla.tokenHash),
     index('sesiones_usuario_idx').on(tabla.usuarioId),
   ],
+);
+
+/**
+ * Retos WebAuthn en vuelo. Viven segundos: se emiten, se consumen una sola vez
+ * y expiran. Guardarlos en la base (y no en memoria) mantiene el login
+ * funcionando cuando Cloud Run escala a cero y levanta otra instancia.
+ */
+export const retosWebauthn = pgTable(
+  'retos_webauthn',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** null en el login, porque todavía no se sabe quién es. */
+    usuarioId: uuid('usuario_id').references(() => usuarios.id, { onDelete: 'cascade' }),
+    reto: text('reto').notNull(),
+    proposito: text('proposito').notNull(),
+    expiraEn: timestamp('expira_en', { withTimezone: true }).notNull(),
+    consumidoEn: timestamp('consumido_en', { withTimezone: true }),
+    creadoEn: timestamp('creado_en', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (tabla) => [uniqueIndex('retos_webauthn_reto_idx').on(tabla.reto)],
 );
 
 /** Perfiles de empresa: publican solo en la categoría Empresas y no inician chats (spec §2.3). */
