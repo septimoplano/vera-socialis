@@ -23,6 +23,16 @@ const esquemaEntorno = z.object({
    */
   WEBAUTHN_RP_ID: z.string().default('localhost'),
   WEBAUTHN_ORIGEN: z.string().url().default('http://localhost:5173'),
+
+  /** Pre-filtro de selfies y, más adelante, sentimiento y moderación. */
+  CLAUDE_API_KEY: z.string().optional(),
+
+  /** Cloudflare R2. Sin estas variables se usa disco local (solo desarrollo). */
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  CARPETA_ARCHIVOS_LOCAL: z.string().default('.archivos-locales'),
 });
 
 export type Entorno = z.infer<typeof esquemaEntorno>;
@@ -48,6 +58,10 @@ export function cargarEntorno(fuente: NodeJS.ProcessEnv = process.env): Entorno 
     }
     if (entorno.WEBAUTHN_RP_ID === 'localhost') {
       throw new Error('WEBAUTHN_RP_ID debe ser el dominio real en producción.');
+    }
+    // Guardar selfies en el disco de un contenedor efímero las perdería.
+    if (!entorno.R2_BUCKET) {
+      throw new Error('R2 es obligatorio en producción: el disco local no persiste.');
     }
   }
 

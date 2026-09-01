@@ -118,6 +118,39 @@ Todo el registro corre dentro de una transacción: o queda la cuenta con su cód
 
 **En producción la API se niega a arrancar** si `COOKIE_SECRET` quedó en el valor de desarrollo, si falta `DATABASE_URL`, o si `WEBAUTHN_RP_ID` sigue siendo `localhost`.
 
+## Verificación humana y panel admin
+
+```
+POST   /verificacion/selfie              sube la selfie (multipart, campo libre)
+GET    /verificacion/estado              estado de mi verificación
+
+GET    /admin/verificaciones?estado=     cola de revisión, con URL temporal de cada selfie
+POST   /admin/verificaciones/:id         { decision: "aprobar" | "rechazar", motivo? }
+DELETE /admin/verificaciones/:id/selfie  borra la imagen del almacenamiento
+GET    /admin/config                     todos los parámetros
+PUT    /admin/config/:clave              edita uno (la doctrina responde 403)
+GET    /admin/buzon · /admin/tickets     lo que llega de Comunidad y de Ayuda
+GET    /admin/score/eventos              bitácora auditable del social score
+GET    /admin/resumen                    cuentas, verificadas y cupo de la beta
+```
+
+**El pre-filtro no decide nada solo.** Descarta lo que claramente no es una selfie de una persona (formato inválido, sin rostro, ilustración, foto de una pantalla) para que la cola tenga menos ruido. Todo lo demás pasa a revisión, y la aprobación siempre es humana. Si el pre-filtro falla o no está configurado, la selfie pasa igual: **nunca se rechaza a alguien por una caída de un servicio**.
+
+**Aprobar** activa la cuenta y le pone la medalla de humano verificado. **Rechazar** la deja pendiente para que pueda intentarlo de nuevo.
+
+**Las selfies se guardan bajo una clave impredecible** que no revela de quién son, se sirven al panel solo como URL temporal (5 minutos), y se pueden borrar en cualquier momento.
+
+### Almacenamiento y pre-filtro sin credenciales
+
+Ninguno de los dos servicios externos es necesario para desarrollar:
+
+| Variable | Con ella | Sin ella |
+|---|---|---|
+| `R2_*` | Cloudflare R2 | disco local en `.archivos-locales/` |
+| `CLAUDE_API_KEY` | pre-filtro con visión de Claude Haiku | solo se revisa el formato; el resto va a revisión manual |
+
+En **producción** la API se niega a arrancar sin R2: el disco de un contenedor efímero perdería las selfies.
+
 ## CI
 
 `.github/workflows/ci.yml` corre en cada PR y push a master: lint → typecheck → tests → build, más un job que construye la imagen Docker de la API. Todo debe estar en verde antes de mergear.
